@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<definitions>
+    <define var="login" value="admin" ></define>
+    <define var="pass" value="mdp" ></define>
+    <define var="nombre_news" value="8" ></define>
+    <define var="nombre_commentaires" value="8" ></define>
+    <define var="nombre_membres" value="5" ></define>
+    <define var="nombre_caracteres" value="30" ></define>
+</definitions>

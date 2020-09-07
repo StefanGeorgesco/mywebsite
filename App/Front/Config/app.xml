@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<definitions>
+    <define var="host_domain" value="http://mywebsite/" ></define>
+    <define var="nombre_news" value="5" ></define>
+    <define var="nombre_commentaires" value="3" ></define>
+    <define var="nombre_membres" value="5" ></define>
+    <define var="nombre_caracteres" value="200" ></define>
+</definitions>

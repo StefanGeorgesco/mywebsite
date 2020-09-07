@@ -1,0 +1,8 @@
+RewriteEngine On
+
+RewriteRule (.+)\.[\d]{10}\.(css|js|jpg|jpeg|gif|png)$ $1.$2 [L]
+
+RewriteRule ^admin/ bootstrap.php?app=Back [QSA,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ bootstrap.php?app=Front [QSA,L]
