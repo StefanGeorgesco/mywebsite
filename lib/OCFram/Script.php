@@ -5,9 +5,9 @@ class Script
 {
     use Hydrator;
 
-    protected $url;
-    protected $fileName;
-    protected $initFunctionName;
+    protected $url = '';
+    protected $fileName = '';
+    protected $initFunctionName = '';
 
     public function __construct(array $data = [])
     {

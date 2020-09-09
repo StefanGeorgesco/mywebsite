@@ -60,10 +60,13 @@ class Form
 
         foreach ($this->scripts as $s)
         {
-            $script .= '<script
+            if ($s->url())
+            {
+                $script .= '<script
     src="'.$s->url().'">
 </script>
 ';
+            }
         }
 
         $script .= '<script>
@@ -76,7 +79,8 @@ class Form
 
         foreach ($this->scripts as $s)
         {
-            if (file_exists($filename = __DIR__.$s->fileName()))
+            if ($s->fileName() &&
+                file_exists($filename = __DIR__.$s->fileName()))
             {
                 $script .= file_get_contents($filename);
             }
@@ -114,8 +118,11 @@ class Form
 
         foreach ($this->scripts as $s)
         {
-            $script .= $s->initFunctionName().'();
+            if ($s->initFunctionName())
+            {
+                $script .= $s->initFunctionName().'();
                 ';
+            }
         }
 
         foreach ($this->fields as $field)
