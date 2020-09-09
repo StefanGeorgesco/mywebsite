@@ -2,7 +2,6 @@ Données
 - avatars
 
 Aides à la saisie
-- API login existe
 - indication login existe à la saisie dans signUP et member update
 
 Technique
