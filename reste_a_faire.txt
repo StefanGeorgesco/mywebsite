@@ -1,9 +1,6 @@
 Données
 - avatars
 
-Aides à la saisie
-- indication login existe à la saisie dans signUP et member update
-
 Technique
 - (maintien de l'autoversion des fichiers statiques au cours des évolutons : fichiers js statiques, images, ...)
 - timezone
