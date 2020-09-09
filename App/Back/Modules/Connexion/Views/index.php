@@ -9,3 +9,6 @@
 
     <input type="submit" value="Connexion" />
 </form>
+<script>
+    document.getElementsByTagName('input')[0].focus();
+</script>

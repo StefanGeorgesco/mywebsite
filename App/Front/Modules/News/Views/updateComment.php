@@ -27,16 +27,14 @@
 <?php } ?>
 
 <form action="" method="post" onsubmit="return validateForm();">
-    <p>
 
-        <?= $form ?>
-        
-        <input type="submit" name="submit" value="Valider" />
-        <input type="reset" name="reset" value="Réinitialiser"
-            onclick="setTimeout(validateForm, 100)" />
-        <span class="customButton"
-            onclick="location.href='/news-<?= $news['id'] ?>.html'">
-            Annuler
-        </span>
-    </p>
+    <?= $form ?>
+
+    <input type="submit" name="submit" value="Valider" />
+    <input type="reset" name="reset" value="Réinitialiser"
+        onclick="setTimeout(validateForm, 100)" />
+    <span class="customButton"
+        onclick="location.href='/news-<?= $news['id'] ?>.html'">
+        Annuler
+    </span>
 </form>

@@ -11,6 +11,7 @@ use \FormBuilder\NewMemberFormBuilder;
 use \FormBuilder\SendLinkFormBuilder;
 use \FormBuilder\UpdateMemberFormBuilder;
 use \FormBuilder\ChangePasswordFormBuilder;
+use \FormBuilder\RenewPasswordFormBuilder;
 use App\Front\Modules\Connexion\ConnexionController;
 
 class MemberController extends BackController
@@ -253,7 +254,7 @@ class MemberController extends BackController
             $member = new Member;
         }
 
-        $formBuilder = new ChangePasswordFormBuilder($member);
+        $formBuilder = new RenewPasswordFormBuilder($member);
         $formBuilder->build();
 
         $form = $formBuilder->form();

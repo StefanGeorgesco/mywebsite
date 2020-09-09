@@ -154,8 +154,26 @@ class Form
     ";
         }
 
-        $script .= '
-}';
+        $script .= "let focusElements = Array.from(
+      document.getElementsByTagName('form')[0].children
+    ).filter(
+      function(child) {
+        return child.tagName.toLowerCase() === 'textarea' ||
+          child.tagName.toLowerCase() === 'input' && [
+          'text',
+          'date',
+          'email',
+          'password',
+          'tel',
+          'url'
+        ].includes(child.getAttribute('type').toLowerCase());
+      }
+    );
+
+    if (focusElements.length > 0) {
+      focusElements[0].focus();
+    }
+}";
 
         $script .= '
         </script>

@@ -3,11 +3,9 @@
     Veuillez renseigner l'adresse email associée à votre compte
 </p>
 <form action="" method="post" onsubmit="return validateForm();">
-    <p>
-        
-        <?= $form ?>
 
-        <input type="submit" value="Envoyer" />
-        <span class="customButton" onclick="location.href='/'">Annuler</span>
-    </p>
+    <?= $form ?>
+
+    <input type="submit" value="Envoyer" />
+    <span class="customButton" onclick="location.href='/'">Annuler</span>
 </form>
