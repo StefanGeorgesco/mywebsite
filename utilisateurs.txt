@@ -9,4 +9,3 @@ Paul		paul0000		actif
 Bibiche		bibiche1234		actif
 Roro		rorororo		actif
 Henri		henri123		actif
-Gege		gege1234		inactif
