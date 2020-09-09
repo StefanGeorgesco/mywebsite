@@ -121,7 +121,7 @@ class Form
             if ($s->initFunctionName())
             {
                 $script .= $s->initFunctionName().'();
-                ';
+    ';
             }
         }
 
@@ -145,6 +145,13 @@ class Form
                 $script .= $field->formatterScriptFunctionName().'();
     ';
             }
+        }
+
+        foreach ($this->fields as $field)
+        {
+            $script .= "document.getElementById('".$field->id().
+                "').addEventListener('focus', ev => ev.target.select());
+    ";
         }
 
         $script .= '
