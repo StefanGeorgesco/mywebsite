@@ -216,6 +216,10 @@ class UpdateMemberFormBuilder extends FormBuilder
             'fileName' => '/../../Web/js/findAddress.js',
             'initFunctionName' => 'findAddressStart',
         ]))
+        ->addScript(new Script([
+            'fileName' => '/../../Web/js/checkLogin.js',
+            'initFunctionName' => 'checkLoginStart',
+        ]))
         ;
     }
 }

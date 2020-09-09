@@ -23,7 +23,7 @@ function elemIndex(elem) {
     return Array.from(elem.parentNode.children).indexOf(elem);
 }
 
-async function findAddressStart() {
+function findAddressStart() {
 
     function displayAdressesList(addressList) {
         if (addressList.length > 0) {
@@ -44,19 +44,19 @@ async function findAddressStart() {
     }
 
     function autoInput(a) {
-        document.getElementById('address').value = a['label'];
-        document.getElementById('housenumber').value = a['housenumber'];
-        document.getElementById('street').value = a['street'];
-        document.getElementById('postcode').value = a['postcode'];
-        document.getElementById('city').value = a['city'];
+        elem('address').value = a['label'];
+        elem('housenumber').value = a['housenumber'];
+        elem('street').value = a['street'];
+        elem('postcode').value = a['postcode'];
+        elem('city').value = a['city'];
     }
 
     function clearInput() {
-        document.getElementById('address').value = "";
-        document.getElementById('housenumber').value = "";
-        document.getElementById('street').value = "";
-        document.getElementById('postcode').value = "";
-        document.getElementById('city').value = "";
+        elem('address').value = "";
+        elem('housenumber').value = "";
+        elem('street').value = "";
+        elem('postcode').value = "";
+        elem('city').value = "";
     }
 
     function selectAddress(ev) {
@@ -65,20 +65,20 @@ async function findAddressStart() {
         autoInput(addressList[elemIndex(ev.target)]);
     }
 
-    const addressInput = document.getElementById('address');
+    const addressInput = elem('address');
     const dropdownList = document.createElement('div');
     dropdownList.setAttribute('id', 'dropdownList');
     addressInput.parentNode.insertBefore(dropdownList, addressInput.nextSibling);
     var addressList = [];
 
-    document.getElementById('clearButton').addEventListener(
+    elem('clearButton').addEventListener(
         'click',
         clearInput
     );
 
     rxjs.fromEvent(addressInput, 'keyup')
     .pipe(
-        rxjs.operators.debounceTime(200),
+        rxjs.operators.debounceTime(100),
         rxjs.operators.map(e => {
             let str = e.target.value;
             return str === "" ? " " : str;
