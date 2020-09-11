@@ -124,8 +124,8 @@ class MemberController extends BackController
         {
             $this->app->user()->setFlash(
                 "Un nouveau lien d'activation de votre compte a été envoyé
-                à l'adresse que vous avez indiquée si elle correspond à un
-                compte que vous avez créé et qui n'est pas déjà activé."
+                à l'adresse que vous avez indiquée si elle est associée à un
+                compte existant qui n'est pas déjà activé."
             );
 
             $storedMember = $this->managers->getManagerOf('Members')
@@ -209,8 +209,8 @@ class MemberController extends BackController
         {
             $this->app->user()->setFlash(
                 "Un lien de changement de mot de passe a été envoyé à
-                l'adresse que vous avez indiquée si elle correspond à
-                l'adresse associée à votre compte et que celui-ci a été activé."
+                l'adresse que vous avez indiquée si elle est associée à
+                un compte existant et activé."
             );
 
             $storedMember = $this->managers->getManagerOf('Members')
