@@ -3,6 +3,8 @@
 
     <?= $form ?>
 
+    <input id="initial_login" type="hidden" name="initial_login" value="<?=
+        $initial_login ?>">
     <input type="submit" name="submit" value="Valider" />
     <span class="customButton" onclick="location.href='/'">Annuler</span>
 </form>

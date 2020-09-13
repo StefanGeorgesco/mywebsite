@@ -100,6 +100,7 @@ class MemberController extends BackController
 
         $this->page->addVar('title', 'S\'inscrire');
         $this->page->addVar('form', $form->createView());
+        $this->page->addVar('initial_login', '');
     }
 
     public function executeRenewActivationLink(HTTPRequest $request)
@@ -435,6 +436,7 @@ class MemberController extends BackController
 
         $this->page->addVar('title', 'Modifier mon profil');
         $this->page->addVar('form', $form->createView());
+        $this->page->addVar('initial_login', $storedMember->login());
     }
 
     public function executeChangePassword(HTTPRequest $request)

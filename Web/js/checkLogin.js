@@ -37,17 +37,23 @@ function displayloginInfo(info, login) {
 }
 
 function checkLoginStart() {
-    const initial_login = elem('login').value;
+    const initial_login = elem('initial_login').value;
+
+    loginAPICall(elem('login').value).subscribe(
+        info => displayloginInfo(info, initial_login)
+    );
 
     rxjs.merge(
         rxjs.fromEvent(elem('login'), 'keyup').pipe(
             rxjs.operators.debounceTime(100)
         ),
         rxjs.fromEvent(elem('login'), 'change'),
-        rxjs.fromEvent(document.getElementsByTagName('form')[0], 'reset')
+        rxjs.fromEvent(document.getElementsByTagName('form')[0], 'reset').pipe(
+            rxjs.operators.delay(100)
+        )
     )
     .pipe(
-        rxjs.operators.map(e => e.target.value),
+        rxjs.operators.map(_ => elem('login').value),
         rxjs.operators.distinctUntilChanged(),
         rxjs.operators.switchMap(loginAPICall),
         rxjs.operators.tap(info => displayloginInfo(info, initial_login))

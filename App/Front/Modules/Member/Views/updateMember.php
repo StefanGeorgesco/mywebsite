@@ -3,6 +3,8 @@
 
     <?= $form ?>
 
+    <input id="initial_login" type="hidden" name="initial_login" value="<?=
+        $initial_login ?>">
     <input type="submit" name="submit" value="Valider" />
     <input type="reset" name="reset" value="Réinitialiser"
         onclick="setTimeout(validateForm, 100)" />
