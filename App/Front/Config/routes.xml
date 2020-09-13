@@ -2,8 +2,8 @@
 <routes>
     <route url="/sign-in\.html" module="Connexion" action="index" ></route>
     <route url="/sign-out\.html" module="Connexion" action="signOut" ></route>
-    <route url="/(?:\?page=(.*))?" module="News" action="index" vars="page"></route>
-    <route url="/news-([0-9]+)\.html(?:\?page=(.*))?" module="News" action="show" vars="id,page"></route>
+    <route url="/(?:\?page=.*)?" module="News" action="index"></route>
+    <route url="/news-([0-9]+)\.html(?:\?page=.*)?" module="News" action="show" vars="id"></route>
     <route url="/comment-([0-9]+)\.html" module="News" action="insertComment" vars="news" ></route>
     <route url="/comment-update-([0-9]+)\.html" module="News" action="updateComment" vars="id" ></route>
     <route url="/comment-delete-([0-9]+)\.html" module="News" action="deleteComment" vars="id" ></route>
@@ -13,7 +13,7 @@
     <route url="/renewpasswordlink-send\.html" module="Member" action="generateRenewPasswordLink" ></route>
     <route url="/password-renew-(\S+)\.html" module="Member" action="renewPassword" vars="token"></route>
     <route url="/profile\.html" module="Member" action="index" ></route>
-    <route url="/members\.html(?:\?page=(.*))?" module="Member" action="list" vars="page"></route>
+    <route url="/members\.html(?:\?page=.*)?" module="Member" action="list"></route>
     <route url="/member-update\.html" module="Member" action="updateMember" ></route>
     <route url="/member-delete\.html" module="Member" action="deleteMember" ></route>
     <route url="/password-change\.html" module="Member" action="changePassword" ></route>
