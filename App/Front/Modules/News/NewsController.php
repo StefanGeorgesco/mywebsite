@@ -41,7 +41,15 @@ class NewsController extends BackController
         $nombreNews = $this->app->config()->get('nombre_news');
         $nombreCaracteres = $this->app->config()->get('nombre_caracteres');
 
-        $pagination = new Pagination($this->app, $manager, $nombreNews);
+        try
+        {
+            $pagination = new Pagination($this->app, $manager, $nombreNews);
+        }
+        catch (\Exception $e)
+        {
+                $this->app->httpResponse()->redirect404();
+        }
+
 
         $listeNews = $manager->getList($pagination->getOffset(), $nombreNews);
 
@@ -75,11 +83,18 @@ class NewsController extends BackController
 
         $nombreCommentaires = $this->app->config()->get('nombre_commentaires');
 
-        $pagination = new Pagination(
-            $this->app, $manager,
-            $nombreCommentaires,
-            $news->id()
-        );
+        try
+        {
+            $pagination = new Pagination(
+                $this->app, $manager,
+                $nombreCommentaires,
+                $news->id()
+            );
+        }
+        catch (\Exception $e)
+        {
+            $this->app->httpResponse()->redirect404();
+        }
 
         $comments = $manager->getListOf(
             $news->id(),

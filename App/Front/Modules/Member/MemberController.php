@@ -333,7 +333,15 @@ class MemberController extends BackController
 
         $nombreMembres = $this->app->config()->get('nombre_membres');
 
-        $pagination = new Pagination($this->app, $manager, $nombreMembres);
+        try
+        {
+            $pagination = new Pagination($this->app, $manager, $nombreMembres);
+        }
+        catch (\Exception $e)
+        {
+            $this->app->httpResponse()->redirect404();
+        }
+
 
         $members = $manager->getList($pagination->getOffset(), $nombreMembres);
 

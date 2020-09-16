@@ -22,6 +22,11 @@ class Pagination extends ApplicationComponent
         $this->setItemsPerPage($itemsPerPage);
         $this->setSelect($select);
         $this->setSpread($spread);
+
+        if ($this->getPage() > $this->getNumberOfPages())
+        {
+            throw new \Exception("Pagination error", 1);
+        }
     }
 
     public function getOffset()
@@ -101,7 +106,7 @@ class Pagination extends ApplicationComponent
         $page = $this->app->httpRequest()->getData('page');
         if (!$page) $page = 1;
 
-        return max(1, min((int) $page, $this->getNumberOfPages()));
+        return max(1, (int) $page);
     }
 
     public function getNumberOfPages()

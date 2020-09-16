@@ -70,7 +70,15 @@ class MemberController extends APIController
 
         $nombreMembres = $this->app->config()->get('nombre_membres');
 
-        $pagination = new Pagination($this->app, $manager, $nombreMembres);
+
+        try
+        {
+            $pagination = new Pagination($this->app, $manager, $nombreMembres);
+        }
+        catch (\Exception $e)
+        {
+            $this->app->httpResponse()->jsonError400();
+        }
 
         $members = $manager->getList($pagination->getOffset(), $nombreMembres);
 

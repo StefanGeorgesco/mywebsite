@@ -28,7 +28,14 @@ class NewsController extends BackController
         $nombreNews = $this->app->config()->get('nombre_news');
         $nombreCaracteres = $this->app->config()->get('nombre_caracteres');
 
-        $pagination = new Pagination($this->app, $manager, $nombreNews);
+        try
+        {
+            $pagination = new Pagination($this->app, $manager, $nombreNews);
+        }
+        catch (\Exception $e)
+        {
+            $this->app->httpResponse()->redirect404();
+        }
 
         $listeNews = $manager->getList($pagination->getOffset(), $nombreNews);
 
