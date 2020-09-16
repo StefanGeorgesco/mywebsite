@@ -27,7 +27,7 @@ class MemberController extends APIController
 
     public function executeCheckLogin(HTTPRequest $request)
     {
-        $login = $request->getData('login') ? $request->getData('login') : '';
+        $login = $request->getData('login');
         $login_valid = (bool) preg_match(Member::LOGIN_MATCH_REGEXP, $login);
 
         $response = array(
