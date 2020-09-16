@@ -3,10 +3,10 @@
     <route url="/sign-in\.html" module="Connexion" action="index" ></route>
     <route url="/sign-out\.html" module="Connexion" action="signOut" ></route>
     <route url="/(?:\?page=\d*)?" module="News" action="index"></route>
-    <route url="/news-([0-9]+)\.html(?:\?page=\d*)?" module="News" action="show" vars="id"></route>
-    <route url="/comment-([0-9]+)\.html" module="News" action="insertComment" vars="news" ></route>
-    <route url="/comment-update-([0-9]+)\.html" module="News" action="updateComment" vars="id" ></route>
-    <route url="/comment-delete-([0-9]+)\.html" module="News" action="deleteComment" vars="id" ></route>
+    <route url="/news-(\d+)\.html(?:\?page=\d*)?" module="News" action="show" vars="id"></route>
+    <route url="/comment-(\d+)\.html" module="News" action="insertComment" vars="news" ></route>
+    <route url="/comment-update-(\d+)\.html" module="News" action="updateComment" vars="id" ></route>
+    <route url="/comment-delete-(\d+)\.html" module="News" action="deleteComment" vars="id" ></route>
     <route url="/sign-up\.html" module="Member" action="signUp" ></route>
     <route url="/activation-link-renew\.html" module="Member" action="renewActivationLink" ></route>
     <route url="/member-activate-(\S+)\.html" module="Member" action="activate" vars="token"></route>
