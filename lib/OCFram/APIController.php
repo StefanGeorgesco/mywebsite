@@ -6,6 +6,7 @@ abstract class APIController extends ApplicationComponent
     protected $module = '';
     protected $action = '';
     protected $managers = null;
+    protected $json = '';
 
     public function __construct(Application $app, $module, $action)
     {
@@ -35,6 +36,11 @@ abstract class APIController extends ApplicationComponent
         $this->$method($this->app->httpRequest());
     }
 
+    public function json()
+    {
+        return $this->json;
+    }
+
     public function setModule($module)
     {
         if (!is_string($module) || empty($module))
@@ -57,5 +63,17 @@ abstract class APIController extends ApplicationComponent
         }
 
         $this->action = $action;
+    }
+
+    public function setJson($json)
+    {
+        if (!is_string($json) || empty($json))
+        {
+            throw new \InvalidArgumentException(
+                'Le json doit être une chaine de caractères valide'
+            );
+        }
+
+        $this->json = $json;
     }
 }

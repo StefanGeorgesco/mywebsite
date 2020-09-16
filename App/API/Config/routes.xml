@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <routes>
     <route url="/API/login-check\?login=.*" module="Member" action="checkLogin" ></route>
-    <route url="/API/profile" module="Member" action="index" ></route>
-    <route url="/API/list(?:\?page=.*)?" module="Member" action="list"></route>
+    <route url="/API/member" module="Member" action="index" ></route>
+    <route url="/API/members(?:\?page=.*)?" module="Member" action="list"></route>
+    <route url="/API/members/(\d+)" module="Member" action="member" vars="id"></route>
 </routes>

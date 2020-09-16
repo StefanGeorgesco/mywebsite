@@ -4,6 +4,7 @@ namespace OCFram;
 class HTTPResponse extends ApplicationComponent
 {
     protected $page;
+    protected $json;
 
     public function addHeader($header)
     {
@@ -20,23 +21,56 @@ class HTTPResponse extends ApplicationComponent
     {
         $this->page = new Page($this->app);
         $this->page->setContentFile(__DIR__.'/../../Errors/404.html');
-        
+
         $this->addHeader('HTTP/1.0 404 Not Found');
 
         $this->send();
     }
 
+    public function jsonError400()
+    {
+        $this->addHeader("HTTP/1.0 400 Bad Request");
+
+        $response = array(
+            'request_success' => false,
+            'message' => 'Bad Request',
+        );
+
+        $this->setJson(json_encode($response));
+
+        $this->sendJson();
+    }
+
     public function send()
     {
-        // Actuellement, cette ligne a peu de sens dans votre esprit.
-        // Promis, vous saurez vraiment ce qu'elle fait d'ici la fin du chapitre
-        // (bien que je suis sûr que les noms choisis sont assez explicites !).
         exit($this->page->getGeneratedPage());
+    }
+
+    public function sendJson()
+    {
+        exit($this->json());
+    }
+
+    public function json()
+    {
+        return $this->json;
     }
 
     public function setPage(Page $page)
     {
         $this->page = $page;
+    }
+
+    public function setJson($json)
+    {
+        if (!is_string($json) || empty($json))
+        {
+            throw new \InvalidArgumentException(
+                'Le json doit être une chaine de caractères valide'
+            );
+        }
+
+        $this->json = $json;
     }
 
     // Changement par rapport à la fonction setcookie() :

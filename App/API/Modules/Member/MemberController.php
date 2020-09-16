@@ -14,7 +14,8 @@ class MemberController extends APIController
             $this->action,
             [
                 'index',
-                'list'
+                'list',
+                'member'
             ]
         );
     }
@@ -44,7 +45,7 @@ class MemberController extends APIController
             if($login_valid) $response['login_free'] = true;
         }
 
-        echo json_encode($response);
+        $this->setJson(json_encode($response));
     }
 
     public function executeIndex(HTTPRequest $request)
@@ -53,12 +54,14 @@ class MemberController extends APIController
             $this->app->user()->getAttribute('login')
         );
 
-        echo json_encode(
+        $response = json_encode(
             array(
                 'request_success' => true,
                 'data' => (array) $member
             )
         );
+
+        $this->setJson(json_encode($response));
     }
 
     public function executeList(HTTPRequest $request)
@@ -76,11 +79,39 @@ class MemberController extends APIController
             $members
         );
 
-        echo json_encode(
+        $response = json_encode(
             array(
                 'request_success' => true,
                 'data' => $data
             )
         );
+
+        $this->setJson(json_encode($response));
+    }
+
+    public function executeMember(HTTPRequest $request)
+    {
+        $member = $this->managers->getManagerOf('Members')->getById(
+            $request->getData('id')
+        );
+
+        if ($member)
+        {
+            $response = array(
+                'request_success' => true,
+                'data' => (array) $member
+            );
+        }
+        else
+        {
+            $this->app->httpResponse()->addHeader("HTTP/1.1 404 Not Found");
+
+            $response = array(
+                'request_success' => false,
+                'message' => 'this member does not exist',
+            );
+        }
+
+        $this->setJson(json_encode($response));
     }
 }

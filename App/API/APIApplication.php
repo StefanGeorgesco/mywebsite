@@ -14,6 +14,8 @@ class APIApplication extends Application
 
     public function run()
     {
+        $this->httpResponse->addHeader("Content-type: application/json;\n");
+
         $controller = $this->getController();
 
         if (
@@ -25,9 +27,10 @@ class APIApplication extends Application
             $controller = new Modules\Connexion\ConnexionController(
                 $this, 'Connexion', 'index');
         }
-        
-        header("Content-type: application/json;\n");
 
         $controller->execute();
+
+        $this->httpResponse->setJson($controller->json());
+        $this->httpResponse->sendJson();
     }
 }
