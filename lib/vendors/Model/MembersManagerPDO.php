@@ -232,8 +232,6 @@ class MembersManagerPDO extends MembersManager
 
         foreach ($members as $member)
         {
-            $member->setPass('********');
-            $member->setPass2('********');
             if ($member->birthDate())
             {
                 $member->setBirthDate(new \DateTime($member->birthDate()));

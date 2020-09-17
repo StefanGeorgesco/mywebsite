@@ -9,8 +9,7 @@ function loginAPICall(login) {
 function displayloginInfo(info, login) {
     let error_message = 'Ce login est déjà pris. ';
 
-    if (info['request_success'] &&
-        info['login_valid'] &&
+    if (info['login_valid'] &&
         elem('login').value !== login) {
         if (info['login_free'] ||
             elem('login').value.toLowerCase() === login.toLowerCase())
