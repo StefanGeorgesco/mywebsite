@@ -22,7 +22,6 @@ class ConnexionController extends APIController
         $this->app->httpResponse()->addHeader("HTTP/1.1 401 Not Unauthorized");
 
         $response = array(
-            'request_success' => false,
             'message' => 'authentication is required and user is not authenticated',
         );
 

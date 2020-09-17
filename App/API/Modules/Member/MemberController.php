@@ -41,7 +41,12 @@ class MemberController extends APIController
                 ->existsLogin($login);
         }
 
-        $this->setJson(json_encode($response, JSON_UNESCAPED_UNICODE));
+        $this->setJson(
+            json_encode(
+                $response,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            )
+        );
     }
 
     public function executeIndex(HTTPRequest $request)
@@ -50,11 +55,23 @@ class MemberController extends APIController
             $this->app->user()->getAttribute('login')
         );
 
-        $member->setHashPass('');
-
         $response = $this->dismount($member);
 
-        $this->setJson(json_encode($response, JSON_UNESCAPED_UNICODE));
+        unset(
+            $response['pass'],
+            $response['pass2'],
+            $response['hashPass'],
+            $response['active'],
+            $response['token'],
+            $response['tokenExpiryTime']
+        );
+
+        $this->setJson(
+            json_encode(
+                $response,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            )
+        );
     }
 
     public function executeList(HTTPRequest $request)
@@ -78,13 +95,26 @@ class MemberController extends APIController
         $response = array_map(
             function ($member)
             {
-                $member->setHashPass('');
-                return $this->dismount($member);
+                $array = $this->dismount($member);
+                unset(
+                    $array['pass'],
+                    $array['pass2'],
+                    $array['hashPass'],
+                    $array['active'],
+                    $array['token'],
+                    $array['tokenExpiryTime']
+                );
+                return $array;
             },
             $members
         );
 
-        $this->setJson(json_encode($response, JSON_UNESCAPED_UNICODE));
+        $this->setJson(
+            json_encode(
+                $response,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            )
+        );
     }
 
     public function executeMember(HTTPRequest $request)
@@ -96,6 +126,14 @@ class MemberController extends APIController
         if ($member)
         {
             $response = $this->dismount($member);
+            unset(
+                $response['pass'],
+                $response['pass2'],
+                $response['hashPass'],
+                $response['active'],
+                $response['token'],
+                $response['tokenExpiryTime']
+            );
         }
         else
         {
@@ -106,6 +144,11 @@ class MemberController extends APIController
             );
         }
 
-        $this->setJson(json_encode($response, JSON_UNESCAPED_UNICODE));
+        $this->setJson(
+            json_encode(
+                $response,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            )
+        );
     }
 }
