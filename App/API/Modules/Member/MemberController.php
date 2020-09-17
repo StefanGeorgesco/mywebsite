@@ -87,7 +87,7 @@ class MemberController extends APIController
         }
         catch (\Exception $e)
         {
-            $this->app->httpResponse()->jsonError400();
+            $this->app->httpResponse()->jsonError404();
         }
 
         $members = $manager->getList($pagination->getOffset(), $nombreMembres);

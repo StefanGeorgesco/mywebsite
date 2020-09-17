@@ -32,8 +32,20 @@ class HTTPResponse extends ApplicationComponent
         $this->addHeader("HTTP/1.0 400 Bad Request");
 
         $response = array(
-            'request_success' => false,
             'message' => 'Bad Request',
+        );
+
+        $this->setJson(json_encode($response));
+
+        $this->sendJson();
+    }
+
+    public function jsonError404()
+    {
+        $this->addHeader("HTTP/1.0 404 Not Found");
+
+        $response = array(
+            'message' => 'Not Found',
         );
 
         $this->setJson(json_encode($response));
