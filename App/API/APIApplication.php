@@ -19,16 +19,6 @@ class APIApplication extends Application
 
         $controller = $this->getController();
 
-        if (
-            $controller->needsAuthentication()
-            && !$this->user->isAuthenticated()
-            && (!$controller->isAdminAccessible() || !$this->user->isAdmin())
-        )
-        {
-            $controller = new Modules\Connexion\ConnexionController(
-                $this, 'Connexion', 'index');
-        }
-
         $controller->execute();
 
         $this->httpResponse->setJson($controller->json());

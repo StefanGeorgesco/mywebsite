@@ -18,10 +18,6 @@ abstract class APIController extends ApplicationComponent
         $this->setAction($action);
     }
 
-    abstract public function needsAuthentication();
-
-    abstract public function isAdminAccessible();
-
     public function execute()
     {
         $method = 'execute'.ucfirst($this->action);
@@ -81,7 +77,7 @@ abstract class APIController extends ApplicationComponent
         $reflectionClass = new \ReflectionClass(get_class($object));
 
         $array = array();
-        
+
         foreach ($reflectionClass->getProperties() as $property) {
             $property->setAccessible(true);
             $array[$property->getName()] = $property->getValue($object);
