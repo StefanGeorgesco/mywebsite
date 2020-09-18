@@ -42,4 +42,25 @@ class HTTPRequest extends ApplicationComponent
     {
         return $_SERVER['REQUEST_URI'];
     }
+
+    public function authorizationToken()
+    {
+        $token = null;
+
+        $headers = apache_request_headers();
+
+        if(isset($headers['Authorization']))
+        {
+            $matches = array();
+
+            preg_match("#^token (\S+)$#", $headers['Authorization'], $matches);
+
+            if(isset($matches[1]))
+            {
+                $token = $matches[1];
+            }
+        }
+
+        return $token;
+    }
 }

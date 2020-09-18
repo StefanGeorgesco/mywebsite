@@ -41,16 +41,22 @@ class MemberController extends APIController
 
     public function executeMember(HTTPRequest $request)
     {
+        $authorization = $this->getAuthorization();
+
         if ($request->method() == 'GET')
         {
-            $member = $this->managers->getManagerOf('Members')->getByLogin(
-                $this->app->user()->getAttribute('login')
-            );
+            if (!$authorization)
+            {
+                $this->app->httpResponse()->jsonError401();
+            }
 
-            if (!$member)
+            if ($authorization->isAdmin())
             {
                 $this->app->httpResponse()->jsonError404();
             }
+
+            $member = $this->managers->getManagerOf('Members')
+                ->getById($authorization->memberId());
 
             $response = $this->dismount($member);
 
@@ -78,7 +84,17 @@ class MemberController extends APIController
 
     public function executeMembers(HTTPRequest $request)
     {
-        $switchCase = [$request->method(), $request->getExists('id')];
+        $authorization = $this->getAuthorization();
+
+        if (!$authorization)
+        {
+            $this->app->httpResponse()->jsonError401();
+        }
+
+        $switchCase = [
+            $request->method(),
+            $request->getExists('id')
+        ];
 
         switch ($switchCase)
         {
@@ -109,7 +125,6 @@ class MemberController extends APIController
                 $manager = $this->managers->getManagerOf('Members');
 
                 $nombreMembres = $this->app->config()->get('nombre_membres');
-
 
                 try
                 {

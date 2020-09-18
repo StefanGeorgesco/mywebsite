@@ -1,6 +1,8 @@
 <?php
 namespace OCFram;
 
+use \Entity\Authorization;
+
 abstract class APIController extends ApplicationComponent
 {
     protected $module = '';
@@ -16,6 +18,32 @@ abstract class APIController extends ApplicationComponent
 
         $this->setModule($module);
         $this->setAction($action);
+    }
+
+    protected function getAuthorization()
+    {
+        $authorization = $this->managers->getManagerOf('Authorizations')
+            ->get($this->app->httpRequest()->authorizationToken());
+
+        if (!$authorization && $this->app->user()->isAuthenticated())
+        {
+            $member = $this->managers->getManagerOf('Members')
+                ->getByLogin($this->app->user()->getAttribute('login'));
+
+            $authorization = new Authorization(
+                [
+                    'type' => 'member',
+                    'memberId' => $member->id()
+                ]
+            );
+        }
+
+        if (!$authorization && $this->app->user()->isAdmin())
+        {
+            $authorization = new Authorization(['type' => 'admin']);
+        }
+
+        return $authorization;
     }
 
     public function execute()

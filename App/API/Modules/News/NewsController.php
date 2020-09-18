@@ -11,6 +11,8 @@ class NewsController extends APIController
 {
     public function executeNews(HTTPRequest $request)
     {
+        $authorization = $this->getAuthorization();
+
         $switchCase = [$request->method(), $request->getExists('id')];
 
         switch ($switchCase)

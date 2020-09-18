@@ -40,6 +40,19 @@ class HTTPResponse extends ApplicationComponent
         $this->sendJson();
     }
 
+    public function jsonError401()
+    {
+        $this->addHeader("HTTP/1.0 401 Unauthorized");
+
+        $response = array(
+            'message' => 'Unauthorized',
+        );
+
+        $this->setJson(json_encode($response));
+
+        $this->sendJson();
+    }
+
     public function jsonError404()
     {
         $this->addHeader("HTTP/1.0 404 Not Found");
