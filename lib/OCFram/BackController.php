@@ -15,6 +15,12 @@ abstract class BackController extends Controller
         $this->page = new Page($app);
         $this->mailer = new Mailer($app);
 
+        if (file_exists($file = __DIR__.'/../../App/'.$this->app->name().
+        '/Modules/'.$this->module.'/EmailTemplates/'.$this->action.'.php'))
+        {
+            $this->mailer->setContentFile($file);
+        }
+
         $this->setView($action);
         $this->setRedirect($redirect);
     }
@@ -46,17 +52,6 @@ abstract class BackController extends Controller
     public function mailer()
     {
         return $this->mailer;
-    }
-
-    public function setAction($action)
-    {
-        parent::setAction($action);
-
-        if (file_exists($file = __DIR__.'/../../App/'.$this->app->name().
-        '/Modules/'.$this->module.'/EmailTemplates/'.$this->action.'.php'))
-        {
-            $this->mailer->setContentFile($file);
-        }
     }
 
     public function setView($view)
