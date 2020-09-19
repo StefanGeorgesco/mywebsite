@@ -56,7 +56,7 @@ abstract class Application
             {
                 if ($this->name() == 'API')
                 {
-                    $this->httpResponse->jsonError400();
+                    $this->httpResponse->jsonError(400);
                 }
                 else
                 {

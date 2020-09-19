@@ -39,7 +39,7 @@ class NewsController extends APIController
                 }
                 else
                 {
-                    $this->app->httpResponse()->jsonError404();
+                    $this->app->httpResponse()->jsonError(404);
                 }
                 break;
 
@@ -60,7 +60,7 @@ class NewsController extends APIController
                 }
                 catch (\Exception $e)
                 {
-                    $this->app->httpResponse()->jsonError404();
+                    $this->app->httpResponse()->jsonError(404);
                 }
 
                 $newsList = $newsManager->getList(
@@ -90,7 +90,7 @@ class NewsController extends APIController
                 break;
 
             default:
-                $this->app->httpResponse()->jsonError400();
+                $this->app->httpResponse()->jsonError(400);
         }
 
         $this->setJson(

@@ -14,7 +14,7 @@ class APIApplication extends Application
 
     public function run()
     {
-        $this->httpResponse->addHeader("Content-type: application/json;\n");
+        $this->httpResponse->addHeader("Content-type: application/json");
         $this->httpResponse->addHeader("Access-Control-Allow-Origin: *");
 
         $controller = $this->getController();

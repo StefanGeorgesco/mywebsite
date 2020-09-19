@@ -28,7 +28,7 @@ class MemberController extends APIController
         }
         else
         {
-            $this->app->httpResponse()->jsonError400();
+            $this->app->httpResponse()->jsonError(400);
         }
 
         $this->setJson(
@@ -47,12 +47,12 @@ class MemberController extends APIController
         {
             if (!$authorization)
             {
-                $this->app->httpResponse()->jsonError401();
+                $this->app->httpResponse()->jsonError(401);
             }
 
             if ($authorization->isAdmin())
             {
-                $this->app->httpResponse()->jsonError404();
+                $this->app->httpResponse()->jsonError(404);
             }
 
             $member = $this->managers->getManagerOf('Members')
@@ -71,7 +71,7 @@ class MemberController extends APIController
         }
         else
         {
-            $this->app->httpResponse()->jsonError400();
+            $this->app->httpResponse()->jsonError(400);
         }
 
         $this->setJson(
@@ -88,7 +88,7 @@ class MemberController extends APIController
 
         if (!$authorization)
         {
-            $this->app->httpResponse()->jsonError401();
+            $this->app->httpResponse()->jsonError(401);
         }
 
         $switchCase = [
@@ -117,7 +117,7 @@ class MemberController extends APIController
                 }
                 else
                 {
-                    $this->app->httpResponse()->jsonError404();
+                    $this->app->httpResponse()->jsonError(404);
                 }
                 break;
 
@@ -136,7 +136,7 @@ class MemberController extends APIController
                 }
                 catch (\Exception $e)
                 {
-                    $this->app->httpResponse()->jsonError404();
+                    $this->app->httpResponse()->jsonError(404);
                 }
 
                 $members = $manager->getList(
@@ -163,7 +163,7 @@ class MemberController extends APIController
                 break;
 
             default:
-                $this->app->httpResponse()->jsonError400();
+                $this->app->httpResponse()->jsonError(400);
         }
 
         $this->setJson(

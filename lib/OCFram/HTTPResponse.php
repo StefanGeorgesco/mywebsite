@@ -6,6 +6,12 @@ class HTTPResponse extends ApplicationComponent
     protected $page;
     protected $json;
 
+    const HTTP_RESPONSES = [
+        '400' => 'Bad Request',
+        '401' => 'Unauthorized',
+        '404' => 'Not Found'
+    ];
+
     public function addHeader($header)
     {
         header($header);
@@ -27,38 +33,15 @@ class HTTPResponse extends ApplicationComponent
         $this->send();
     }
 
-    public function jsonError400()
+    public function jsonError($code)
     {
-        $this->addHeader("HTTP/1.0 400 Bad Request");
+        $code = (string) $code;
+        $message = self::HTTP_RESPONSES[$code];
+
+        $this->addHeader("HTTP/1.0 $code $message");
 
         $response = array(
-            'message' => 'Bad Request',
-        );
-
-        $this->setJson(json_encode($response));
-
-        $this->sendJson();
-    }
-
-    public function jsonError401()
-    {
-        $this->addHeader("HTTP/1.0 401 Unauthorized");
-
-        $response = array(
-            'message' => 'Unauthorized',
-        );
-
-        $this->setJson(json_encode($response));
-
-        $this->sendJson();
-    }
-
-    public function jsonError404()
-    {
-        $this->addHeader("HTTP/1.0 404 Not Found");
-
-        $response = array(
-            'message' => 'Not Found',
+            'message' => $message,
         );
 
         $this->setJson(json_encode($response));
