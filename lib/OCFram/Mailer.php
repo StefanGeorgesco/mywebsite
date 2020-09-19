@@ -23,14 +23,14 @@ class Mailer extends ApplicationComponent
         $this->vars[$var] = $value;
     }
 
-    protected function generateMessage()
+    protected function generateMail()
     {
         if (!file_exists($this->contentFile))
         {
             throw new \RuntimeException('Le modèle spécifié n\'existe pas');
         }
 
-        $host = $this->app->baseUrl();
+        $baseUrl = $this->app->baseUrl();
 
         extract($this->vars);
 
@@ -41,7 +41,7 @@ class Mailer extends ApplicationComponent
 
     public function send()
 	{
-        $this->generateMessage();
+        $this->generateMail();
 
 		//mail($this->to, $this->subject, $this->message, self::HEADERS);
 
