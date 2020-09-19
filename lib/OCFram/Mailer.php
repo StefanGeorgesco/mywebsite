@@ -31,6 +31,7 @@ class Mailer extends ApplicationComponent
         }
 
         $host = $this->app->config()->get('host_domain');
+
         extract($this->vars);
 
         ob_start();
@@ -41,8 +42,10 @@ class Mailer extends ApplicationComponent
     public function send()
 	{
         $this->generateMessage();
+        
 		//mail($this->to, $this->subject, $this->message, self::HEADERS);
-        // FOR DEVELOPMENT PHASE
+
+        // FOR DEVELOPMENT PHASE :
         file_put_contents('/home/stefan/email.html', $this->message);
 	}
 

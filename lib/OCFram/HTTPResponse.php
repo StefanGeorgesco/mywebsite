@@ -98,8 +98,6 @@ class HTTPResponse extends ApplicationComponent
         $this->json = $json;
     }
 
-    // Changement par rapport à la fonction setcookie() :
-    // le dernier argument est par défaut à true
     public function setCookie(
         $name,
         $value = '',
