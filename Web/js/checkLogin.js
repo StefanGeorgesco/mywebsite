@@ -6,53 +6,61 @@ function loginAPICall(login) {
     );
 }
 
-function displayloginInfo(info, login) {
-    let error_message = 'Ce login est déjà pris. ';
+function displayloginInfo(info, initial_login) {
+    const login_elem = elem('login');
+    const error_message_elem = elem('login-errorMessage');
+    const error_message = 'Ce login est déjà pris. ';
+
+    function setMessage()
+    {
+        let html = error_message_elem.innerHTML;
+        error_message_elem.innerHTML = html + error_message;
+    }
+
+    function clearMessage()
+    {
+        let html = error_message_elem.innerHTML;
+        error_message_elem.innerHTML = html.replace(error_message, '');
+    }
+
+    clearMessage();
 
     if (info['login_valid'] &&
-        elem('login').value !== login) {
+        login_elem.value !== initial_login) {
         if (info['login_free'] ||
-            elem('login').value.toLowerCase() === login.toLowerCase())
+            login_elem.value.toLowerCase() === initial_login.toLowerCase())
         {
-            elem('login').style.backgroundColor = "lightgreen";
-            let html = elem('login-errorMessage').innerHTML;
-            elem('login-errorMessage').innerHTML = html.replace(
-                error_message,
-                ''
-            );
+            login_elem.style.backgroundColor = "lightgreen";
+            clearMessage();
         } else {
-            elem('login').style.backgroundColor = "pink";
-            let html = elem('login-errorMessage').innerHTML;
-            elem('login-errorMessage').innerHTML = html + error_message;
+            login_elem.style.backgroundColor = "pink";
+            setMessage();
         }
     } else {
-        elem('login').style.backgroundColor = "initial";
-        let html = elem('login-errorMessage').innerHTML;
-        elem('login-errorMessage').innerHTML = html.replace(
-            error_message,
-            ''
-        );
+        login_elem.style.backgroundColor = "initial";
+        clearMessage();
     }
 }
 
 function checkLoginStart() {
+    const login_elem = elem('login');
     const initial_login = elem('initial_login').value;
 
-    loginAPICall(elem('login').value).subscribe(
+    loginAPICall(login_elem.value).subscribe(
         info => displayloginInfo(info, initial_login)
     );
 
     rxjs.merge(
-        rxjs.fromEvent(elem('login'), 'keyup').pipe(
+        rxjs.fromEvent(login_elem, 'keyup').pipe(
             rxjs.operators.debounceTime(100)
         ),
-        rxjs.fromEvent(elem('login'), 'change'),
-        rxjs.fromEvent(document.getElementsByTagName('form')[0], 'reset').pipe(
+        rxjs.fromEvent(login_elem, 'change'),
+        rxjs.fromEvent(document.querySelector('form'), 'reset').pipe(
             rxjs.operators.delay(100)
         )
     )
     .pipe(
-        rxjs.operators.map(_ => elem('login').value),
+        rxjs.operators.map(_ => login_elem.value),
         rxjs.operators.distinctUntilChanged(),
         rxjs.operators.switchMap(loginAPICall),
         rxjs.operators.tap(info => displayloginInfo(info, initial_login))
