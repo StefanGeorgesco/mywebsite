@@ -37,7 +37,7 @@ function displayloginInfo(info, initial_login) {
             setMessage();
         }
     } else {
-        login_elem.style.backgroundColor = "initial";
+        login_elem.style.backgroundColor = "";
         clearMessage();
     }
 }
