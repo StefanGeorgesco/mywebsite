@@ -50,7 +50,7 @@ trait PageUtils
                     '#\[u\](.+)\[/u\]#isU',
                     '#\[color=('.implode('|', $myColors).')\](.+)\[/color\]#isU',
                     '#https?://\S+#i',
-                    '#\S+[0-9a-z_/-]@\S+[0-9a-z_/-]#i',
+                    '#\S+@\S+#i',
                     '#\[img\](\S+[0-9a-z_/-])\[/img\]#iU',
                     '#&lt;(/?('.implode('|', $myTags).'))&gt;#iU'
                 ),
