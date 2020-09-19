@@ -74,8 +74,7 @@ class MemberController extends BackController
             $this->mailer->addVar('login', $member->login());
             $this->mailer->addVar(
                 'url',
-                $this->app->config()->get('host_domain').
-                'member-activate-'.$member->token().'.html'
+                $this->app->baseUrl().'member-activate-'.$member->token().'.html'
             );
             $this->mailer->setTo($request->postData('email'));
             $this->mailer->setSubject('Activation de votre compte');
@@ -141,8 +140,7 @@ class MemberController extends BackController
                 $this->mailer->addVar('login', $storedMember->login());
                 $this->mailer->addVar(
                     'url',
-                    $this->app->config()->get('host_domain').
-                    'member-activate-'.$token.'.html'
+                    $this->app->baseUrl().'member-activate-'.$token.'.html'
                 );
                 $this->mailer->setTo($request->postData('email'));
                 $this->mailer->setSubject('Activation de votre compte');
@@ -226,8 +224,7 @@ class MemberController extends BackController
                 $this->mailer->addVar('login', $storedMember->login());
                 $this->mailer->addVar(
                     'url',
-                    $this->app->config()->get('host_domain').
-                    'password-renew-'.$token.'.html'
+                    $this->app->baseUrl().'password-renew-'.$token.'.html'
                 );
                 $this->mailer->setTo($request->postData('email'));
                 $this->mailer->setSubject('Oubli du mot de passe');

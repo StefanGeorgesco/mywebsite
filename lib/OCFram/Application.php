@@ -103,4 +103,19 @@ abstract class Application
     {
         return $this->config;
     }
+
+    public function HTTPProtocol()
+    {
+        return $_SERVER['SERVER_PORT'] == '80' ? 'http' : 'https';
+    }
+
+    public function host()
+    {
+        return $_SERVER['SERVER_NAME'];
+    }
+
+    public function baseUrl()
+    {
+        return $this->HTTPProtocol().'://'.$this->host().'/';
+    }
 }

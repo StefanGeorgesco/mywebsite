@@ -30,7 +30,7 @@ class Mailer extends ApplicationComponent
             throw new \RuntimeException('Le modèle spécifié n\'existe pas');
         }
 
-        $host = $this->app->config()->get('host_domain');
+        $host = $this->app->baseUrl();
 
         extract($this->vars);
 
@@ -42,7 +42,7 @@ class Mailer extends ApplicationComponent
     public function send()
 	{
         $this->generateMessage();
-        
+
 		//mail($this->to, $this->subject, $this->message, self::HEADERS);
 
         // FOR DEVELOPMENT PHASE :
