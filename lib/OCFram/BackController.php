@@ -1,26 +1,26 @@
 <?php
 namespace OCFram;
 
-abstract class BackController extends ApplicationComponent
+abstract class BackController extends Controller
 {
-    protected $module = '';
-    protected $action = '';
     protected $view = '';
     protected $redirect = '.';
-    protected $managers = null;
     protected $page = null;
     protected $mailer = null;
 
     public function __construct(Application $app, $module, $action, $redirect='.')
     {
-        parent::__construct($app);
+        parent::__construct($app, $module, $action);
 
-        $this->managers = new Managers('PDO', PDOFactory::getMysqlConnexion());
         $this->page = new Page($app);
         $this->mailer = new Mailer($app);
 
-        $this->setModule($module);
-        $this->setAction($action);
+        if (file_exists($file = __DIR__.'/../../App/'.$this->app->name().
+        '/Modules/'.$this->module.'/EmailTemplates/'.$this->action.'.php'))
+        {
+            $this->mailer->setContentFile($file);
+        }
+
         $this->setView($action);
         $this->setRedirect($redirect);
     }
@@ -36,16 +36,7 @@ abstract class BackController extends ApplicationComponent
             $this->managers->getManagerOf('Members')->count()
         );
 
-        $method = 'execute'.ucfirst($this->action);
-
-        if (!is_callable([$this, $method]))
-        {
-            throw new \RuntimeException(
-                'L\'action "'.$this->action.'" n\'est pas définie sur ce module'
-            );
-        }
-
-        $this->$method($this->app->httpRequest());
+        parent::execute();
     }
 
     public function redirect()
@@ -61,36 +52,6 @@ abstract class BackController extends ApplicationComponent
     public function mailer()
     {
         return $this->mailer;
-    }
-
-    public function setModule($module)
-    {
-        if (!is_string($module) || empty($module))
-        {
-            throw new \InvalidArgumentException(
-                'Le module doit être une chaine de caractères valide'
-            );
-        }
-
-        $this->module = $module;
-    }
-
-    public function setAction($action)
-    {
-        if (!is_string($action) || empty($action))
-        {
-            throw new \InvalidArgumentException(
-                'L\'action doit être une chaine de caractères valide'
-            );
-        }
-
-        $this->action = $action;
-
-        if (file_exists($file = __DIR__.'/../../App/'.$this->app->name().
-        '/Modules/'.$this->module.'/EmailTemplates/'.$this->action.'.php'))
-        {
-            $this->mailer->setContentFile($file);
-        }
     }
 
     public function setView($view)
