@@ -531,8 +531,10 @@ class MemberController extends BackController
             ->getByLogin($this->app->user()->getAttribute('login'));
 
             $this->managers->getManagerOf('Members')->delete($member);
+            $this->managers->getManagerOf('Authorizations')
+                ->deleteFromMember($member->id());
             $this->managers->getManagerOf('Comments')
-            ->deleteFromMember($member->id());
+                ->deleteFromMember($member->id());
 
             $this->app->user()->setAuthenticated(null, false);
 
