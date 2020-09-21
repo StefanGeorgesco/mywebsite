@@ -71,7 +71,8 @@ abstract class CommentsManager extends Manager
 
     /**
     * Méthode permettant de récupérer une liste de commentaires.
-    * @param $news La news sur laquelle on veut récupérer les commentaires
+    * @param $news int L'identifiant de la news sur laquelle on veut
+    * récupérer les commentaires
     * @param $debut int La première news à sélectionner
     * @param $limite int Le nombre de news à sélectionner
     * @return array

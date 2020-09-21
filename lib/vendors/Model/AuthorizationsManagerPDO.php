@@ -9,12 +9,19 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
     {
         $q = $this->dao->prepare("
             INSERT INTO authorizations
-            SET type=:type, memberId=:memberId,
+            SET token=:token, hashPassToken=:hashPassToken,
+            type=:type, member=:member, description=:description,
             creationDate=NOW(), updateDate=NOW()
         ");
 
-        $q->bindValue(':memberId', $authorization->memberId());
+        $q->bindValue(':token', $authorization->token());
+        $q->bindValue(
+            ':hashPassToken',
+            password_hash($authorization->passToken(), PASSWORD_DEFAULT)
+        );
         $q->bindValue(':type', $authorization->type());
+        $q->bindValue(':member', $authorization->member());
+        $q->bindValue(':description', $authorization->description());
 
         $ret = $q->execute();
 
@@ -29,13 +36,12 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
         {
             $q = $this->dao->prepare("
                 UPDATE authorizations
-                SET type=:type, memberId=:memberId,
+                SET description=:description,
                 updateDate=NOW()
                 WHERE id=:id
             ");
 
-            $q->bindValue(':type', $authorization->type());
-            $q->bindValue(':memberId', $authorization->memberId());
+            $q->bindValue(':description', $authorization->description());
             $q->bindValue(':id', $authorization->id(), \PDO::PARAM_INT);
 
             return $q->execute();
@@ -51,11 +57,21 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
         ".(int) $id);
     }
 
-    public function getList($debut = -1, $limite = -1)
+    public function deleteFromMember($member)
+    {
+        return $this->dao->exec("
+            DELETE FROM authorizations WHERE member=
+        ".(int) $member);
+    }
+
+    public function getListOfMember($member, $debut = -1, $limite = -1)
     {
         $sql = "
-        SELECT id, type, memberId, creationDate, updateDate
+        SELECT token, hashPassToken,
+        type, member, description,
+        creationDate, updateDate
         FROM authorizations
+        WHERE member=:member
         ORDER BY creationDate DESC
         ";
 
@@ -64,7 +80,10 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
             $sql .= ' LIMIT '.(int) $limite.' OFFSET '.(int) $debut;
         }
 
-        $q = $this->dao->query($sql);
+        $q = $this->dao->prepare($sql);
+        $q->bindValue(':member', $member, \PDO::PARAM_INT);
+        $q->execute();
+
         $q->setFetchMode(
             \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE,
             '\Entity\Authorization'
@@ -90,11 +109,13 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
     public function get($id)
     {
         $q = $this->dao->prepare("
-            SELECT id, type, memberId, creationDate, updateDate
+            SELECT token, hashPassToken,
+            type, member, description,
+            creationDate, updateDate
             FROM authorizations
             WHERE id=:id
         ");
-        $q->bindValue(':id', $id);
+        $q->bindValue(':id', (int) $id, \PDO::PARAM_INT);
         $q->execute();
 
         $q->setFetchMode(
@@ -104,7 +125,38 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
 
         if ($authorization = $q->fetch())
         {
-            $authorization->setMemberId((int) $authorization->memberId());
+            $authorization->setCreationDate(
+                new \DateTime($authorization->creationDate())
+            );
+            $authorization->setUpdateDate(
+                new \DateTime($authorization->updateDate())
+            );
+
+            return $authorization;
+        }
+
+        return null;
+    }
+
+    public function getByToken($token)
+    {
+        $q = $this->dao->prepare("
+            SELECT token, hashPassToken,
+            type, member, description,
+            creationDate, updateDate
+            FROM authorizations
+            WHERE BINARY token=:token
+        ");
+        $q->bindValue(':token', $token);
+        $q->execute();
+
+        $q->setFetchMode(
+            \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE,
+            '\Entity\Authorization'
+        );
+
+        if ($authorization = $q->fetch())
+        {
             $authorization->setCreationDate(
                 new \DateTime($authorization->creationDate())
             );

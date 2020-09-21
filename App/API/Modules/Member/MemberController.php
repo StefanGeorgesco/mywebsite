@@ -56,7 +56,7 @@ class MemberController extends APIController
             }
 
             $member = $this->managers->getManagerOf('Members')
-                ->getById($authorization->memberId());
+                ->getById($authorization->member());
 
             $response = $this->dismount($member);
 

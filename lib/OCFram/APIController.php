@@ -9,8 +9,18 @@ abstract class APIController extends Controller
 
     protected function getAuthorization()
     {
+        $authorizationToken = $this->app->httpRequest()->authorizationToken();
+        $token = substr($authorizationToken, 0, 32);
+        $passToken = substr($authorizationToken, 32);
+
         $authorization = $this->managers->getManagerOf('Authorizations')
-            ->get($this->app->httpRequest()->authorizationToken());
+            ->getByToken($token);
+
+        if ($authorization &&
+            !password_verify($passToken, $authorization->hashPassToken()))
+        {
+            $authorization = null;
+        }
 
         if (!$authorization && $this->app->user()->isAuthenticated())
         {
@@ -20,7 +30,7 @@ abstract class APIController extends Controller
             $authorization = new Authorization(
                 [
                     'type' => 'member',
-                    'memberId' => $member->id()
+                    'member' => $member->id()
                 ]
             );
         }

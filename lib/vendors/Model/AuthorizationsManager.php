@@ -56,20 +56,37 @@ abstract class AuthorizationsManager extends Manager
     abstract public function delete($id);
 
     /**
-    * Méthode retournant une liste d'autorisations demandée
+    * Méthode permettant de supprimer toutes les autorisations d'un membre
+    * @param $member int L'identifiant du membre dont les autorisations
+    * doivent être supprimées
+    * @return int
+    */
+    abstract public function deleteFromMember($member);
+
+    /**
+    * Méthode retournant la liste des autorisations d'un membre
+    * @param $member int l'identifiant du membre
     * @param $debut int La première autorisations à sélectionner
     * @param $limite int Le nombre d'autorisations à sélectionner
     * @return array La liste des autorisations. Chaque entrée est une instance
     * de Authorization.
     */
-    abstract public function getList($debut = -1, $limite = -1);
+    abstract public function getListOfMember($member, $debut = -1, $limite = -1);
 
     /**
    * Méthode retournant une autorisations précise.
    * @param $id int L'identifiant de l'autorisation à récupérer
-   * @return Authorization L\'autorisation demandée
+   * @return Authorization L'autorisation demandée | null
    */
    abstract public function get($id);
+
+   /**
+   * Méthode retournant une autorisation précise par son token
+   * (jeu de données étendu, recherche sensible à la casse).
+   * @param $token string Le token de l'autorisation à récupérer
+   * @return Authorization L'autorisation demandée | null
+   */
+   abstract public function getByToken($token);
 
    /**
    * Méthode renvoyant le nombre d'autorisations total.
