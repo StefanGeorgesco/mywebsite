@@ -107,6 +107,49 @@ class CommentsManagerPDO extends CommentsManager
         return $comments;
     }
 
+    public function getListOfMember($member, $debut = -1, $limite = -1)
+    {
+        if (!ctype_digit($member))
+        {
+            throw new \InvalidArgumentException(
+                'L\'identifiant du membre passé doit être un nombre entier valide'
+            );
+        }
+
+        $sql = "
+            SELECT comments.id, news, member, members.login AS author, contents,
+            comments.creationDate, comments.updateDate
+            FROM comments
+            LEFT JOIN members ON members.id=comments.member
+            WHERE member=:member
+            ORDER BY comments.creationDate DESC
+        ";
+
+        if ($debut != -1 || $limite != -1)
+        {
+            $sql .= ' LIMIT '.(int) $limite.' OFFSET '.(int) $debut;
+        }
+
+        $q = $this->dao->prepare($sql);
+        $q->bindValue(':member', $member, \PDO::PARAM_INT);
+        $q->execute();
+
+        $q->setFetchMode(
+            \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE,
+            '\Entity\Comment'
+        );
+
+        $comments = $q->fetchAll();
+
+        foreach ($comments as $comment)
+        {
+            $comment->setCreationDate(new \DateTime($comment->creationDate()));
+            $comment->setUpdateDate(new \DateTime($comment->updateDate()));
+        }
+
+        return $comments;
+    }
+
     public function get($id)
     {
         $q = $this->dao->prepare("

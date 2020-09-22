@@ -13,14 +13,14 @@ class NewsController extends APIController
     {
         $authorization = $this->getAuthorization();
 
+        $newsManager = $this->managers->getManagerOf('News');
+        $commentsManager = $this->managers->getManagerOf('Comments');
+
         $switchCase = [$request->method(), $request->getExists('id')];
 
         switch ($switchCase)
         {
             case ['GET', true]:
-                $newsManager = $this->managers->getManagerOf('News');
-                $commentsManager = $this->managers->getManagerOf('Comments');
-
                 $news = $newsManager->get($request->getData('id'));
 
                 if ($news)
@@ -32,7 +32,7 @@ class NewsController extends APIController
                         {
                             return $this->dismount($comment);
                         },
-                        $commentsManager->getListOf($response['id'])
+                        $commentsManager->getListOf($news['id'])
                     );
 
                     $response['comments'] = $commentsArray;
@@ -44,11 +44,7 @@ class NewsController extends APIController
                 break;
 
             case ['GET', false]:
-                $newsManager = $this->managers->getManagerOf('News');
-                $commentsManager = $this->managers->getManagerOf('Comments');
-
                 $nombreNews = $this->app->config()->get('nombre_news');
-
 
                 try
                 {
@@ -78,7 +74,7 @@ class NewsController extends APIController
                             {
                                 return $this->dismount($comment);
                             },
-                            $commentsManager->getListOf($newsArray['id'])
+                            $commentsManager->getListOf($news['id'])
                         );
 
                         $newsArray['comments'] = $commentsArray;

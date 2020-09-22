@@ -70,14 +70,24 @@ abstract class CommentsManager extends Manager
     abstract public function deleteFromMember($member);
 
     /**
-    * Méthode permettant de récupérer une liste de commentaires.
-    * @param $news int L'identifiant de la news sur laquelle on veut
+    * Méthode permettant de récupérer la liste de commentaires d'une news.
+    * @param $news int L'identifiant de la news pour laquelle on veut
     * récupérer les commentaires
     * @param $debut int La première news à sélectionner
     * @param $limite int Le nombre de news à sélectionner
     * @return array
     */
     abstract public function getListOf($news, $debut = -1, $limite = -1);
+
+    /**
+    * Méthode permettant de récupérer la liste des commentaires d'un membre.
+    * @param $member int L'identifiant du membre dont on veut
+    * récupérer les commentaires
+    * @param $debut int La première news à sélectionner
+    * @param $limite int Le nombre de news à sélectionner
+    * @return array
+    */
+    abstract public function getListOfMember($member, $debut = -1, $limite = -1);
 
     /**
     * Méthode permettant d'obtenir un commentaire spécifique.

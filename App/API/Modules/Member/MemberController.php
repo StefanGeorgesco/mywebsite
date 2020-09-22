@@ -38,20 +38,22 @@ class MemberController extends APIController
     {
         $authorization = $this->getAuthorization();
 
+        if (!$authorization)
+        {
+            $this->app->httpResponse()->jsonError(401);
+        }
+
+        if ($authorization->isAdmin())
+        {
+            $this->app->httpResponse()->jsonError(404);
+        }
+
+        $membersManager = $this->managers->getManagerOf('Members');
+        $commentsManager = $this->managers->getManagerOf('Comments');
+
         if ($request->method() == 'GET')
         {
-            if (!$authorization)
-            {
-                $this->app->httpResponse()->jsonError(401);
-            }
-
-            if ($authorization->isAdmin())
-            {
-                $this->app->httpResponse()->jsonError(404);
-            }
-
-            $member = $this->managers->getManagerOf('Members')
-                ->getById($authorization->member());
+            $member = $membersManager->getById($authorization->member());
 
             $response = $this->dismount($member);
 
@@ -63,6 +65,16 @@ class MemberController extends APIController
                 $response['token'],
                 $response['tokenExpiryTime']
             );
+
+            $commentsArray = array_map(
+                function ($comment)
+                {
+                    return $this->dismount($comment);
+                },
+                $commentsManager->getListOfMember($member['id'])
+            );
+
+            $response['comments'] = $commentsArray;
         }
         else
         {
@@ -81,6 +93,9 @@ class MemberController extends APIController
             $this->app->httpResponse()->jsonError(401);
         }
 
+        $membersManager = $this->managers->getManagerOf('Members');
+        $commentsManager = $this->managers->getManagerOf('Comments');
+
         $switchCase = [
             $request->method(),
             $request->getExists('id')
@@ -89,9 +104,7 @@ class MemberController extends APIController
         switch ($switchCase)
         {
             case ['GET', true]:
-                $member = $this->managers->getManagerOf('Members')->getById(
-                    $request->getData('id')
-                );
+                $member = $membersManager->getById($request->getData('id'));
 
                 if ($member)
                 {
@@ -104,6 +117,16 @@ class MemberController extends APIController
                         $response['token'],
                         $response['tokenExpiryTime']
                     );
+
+                    $commentsArray = array_map(
+                        function ($comment)
+                        {
+                            return $this->dismount($comment);
+                        },
+                        $commentsManager->getListOfMember($member['id'])
+                    );
+
+                    $response['comments'] = $commentsArray;
                 }
                 else
                 {
@@ -112,15 +135,13 @@ class MemberController extends APIController
                 break;
 
             case ['GET', false]:
-                $manager = $this->managers->getManagerOf('Members');
-
                 $nombreMembres = $this->app->config()->get('nombre_membres');
 
                 try
                 {
                     $pagination = new Pagination(
                         $this->app,
-                        $manager,
+                        $membersManager,
                         $nombreMembres
                     );
                 }
@@ -129,24 +150,36 @@ class MemberController extends APIController
                     $this->app->httpResponse()->jsonError(404);
                 }
 
-                $members = $manager->getList(
+                $members = $membersManager->getList(
                     $pagination->getOffset(),
                     $nombreMembres
                 );
 
                 $response = array_map(
-                    function ($member)
+                    function ($member) use ($commentsManager)
                     {
-                        $array = $this->dismount($member);
+                        $memberArray = $this->dismount($member);
+
                         unset(
-                            $array['pass'],
-                            $array['pass2'],
-                            $array['hashPass'],
-                            $array['active'],
-                            $array['token'],
-                            $array['tokenExpiryTime']
+                            $memberArray['pass'],
+                            $memberArray['pass2'],
+                            $memberArray['hashPass'],
+                            $memberArray['active'],
+                            $memberArray['token'],
+                            $memberArray['tokenExpiryTime']
                         );
-                        return $array;
+
+                        $commentsArray = array_map(
+                            function ($comment)
+                            {
+                                return $this->dismount($comment);
+                            },
+                            $commentsManager->getListOfMember($member['id'])
+                        );
+
+                        $memberArray['comments'] = $commentsArray;
+
+                        return $memberArray;
                     },
                     $members
                 );
