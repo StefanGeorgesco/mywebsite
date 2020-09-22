@@ -43,6 +43,11 @@ class HTTPRequest extends ApplicationComponent
         return $_SERVER['REQUEST_URI'];
     }
 
+    public function requestBodyData()
+    {
+        return json_decode(file_get_contents('php://input') , true);
+    }
+
     public function authorizationToken()
     {
         $token = null;

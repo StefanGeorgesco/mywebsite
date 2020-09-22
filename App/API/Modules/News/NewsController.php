@@ -84,4 +84,41 @@ class NewsController extends APIController
 
         $this->setResponse($response);
     }
+
+    public function executeNewsPOST(HTTPRequest $request)
+    {
+        $authorization = $this->getAuthorization();
+
+        if (!$authorization)
+        {
+            $this->app->httpResponse()->jsonError(401);
+        }
+
+        if ($request->getExists('id'))
+        {
+            $this->app->httpResponse()->jsonError(400);
+        }
+        else
+        {
+            if (!$authorization->isAdmin())
+            {
+                $this->app->httpResponse()->jsonError(401);
+            }
+
+            $news = new News($request->requestBodyData());
+
+            if ($this->managers->getManagerOf('News')->save($news))
+            {
+                $response = $this->dismount(
+                    $this->managers->getManagerOf('News')->get($news->id())
+                );
+            }
+            else
+            {
+                $this->app->httpResponse()->jsonError(400);
+            }
+        }
+
+        $this->setResponse($response);
+    }
 }
