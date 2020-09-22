@@ -5,7 +5,7 @@ use \Entity\Authorization;
 
 abstract class APIController extends Controller
 {
-    protected $json = '';
+    protected $response;
 
     protected function getAuthorization()
     {
@@ -45,19 +45,20 @@ abstract class APIController extends Controller
 
     public function json()
     {
-        return $this->json;
+        return json_encode(
+            $this->response(),
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
     }
 
-    public function setJson($json)
+    public function response()
     {
-        if (!is_string($json) || empty($json))
-        {
-            throw new \InvalidArgumentException(
-                'Le json doit être une chaine de caractères valide'
-            );
-        }
+        return $this->response;
+    }
 
-        $this->json = $json;
+    public function setResponse($response)
+    {
+        $this->response = $response;
     }
 
     protected function dismount($object) {

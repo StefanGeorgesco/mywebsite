@@ -93,11 +93,6 @@ class NewsController extends APIController
                 $this->app->httpResponse()->jsonError(400);
         }
 
-        $this->setJson(
-            json_encode(
-                $response,
-                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-            )
-        );
+        $this->setResponse($response);
     }
 }
