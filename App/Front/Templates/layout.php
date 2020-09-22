@@ -63,6 +63,9 @@
                     <a href="/admin/members.html">Membres (admin)</a>
                 </li>
                 <li>
+                    <a href="/admin/authorizations.html">Tokens</a>
+                </li>
+                <li>
                     <a href="/admin/sign-out.html">Quitter admin</a>
                 </li>
                 <?php } ?>

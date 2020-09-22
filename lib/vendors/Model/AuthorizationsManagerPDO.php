@@ -106,6 +106,46 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
         return $authorizations;
     }
 
+    public function getListOfAdmin($debut = -1, $limite = -1)
+    {
+        $sql = "
+        SELECT id, token, hashPassToken,
+        type, member, description,
+        creationDate, updateDate
+        FROM authorizations
+        WHERE type='admin'
+        ORDER BY creationDate DESC
+        ";
+
+        if ($debut != -1 || $limite != -1)
+        {
+            $sql .= ' LIMIT '.(int) $limite.' OFFSET '.(int) $debut;
+        }
+
+        $q = $this->dao->query($sql);
+
+        $q->setFetchMode(
+            \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE,
+            '\Entity\Authorization'
+        );
+
+        $authorizations = $q->fetchAll();
+
+        $q->closeCursor();
+
+        foreach ($authorizations as $authorization)
+        {
+            $authorization->setCreationDate(
+                new \DateTime($authorization->creationDate())
+            );
+            $authorization->setUpdateDate(
+                new \DateTime($authorization->updateDate())
+            );
+        }
+
+        return $authorizations;
+    }
+
     public function get($id)
     {
         $q = $this->dao->prepare("

@@ -1,5 +1,5 @@
 <?php
-namespace App\Front\Modules\Security;
+namespace App\Back\Modules\Security;
 
 use \OCFram\BackController;
 use \OCFram\HTTPRequest;
@@ -23,9 +23,6 @@ class SecurityController extends BackController
 
     public function executeIndex(HTTPRequest $request)
     {
-        $memberId = $this->managers->getManagerOf('members')
-            ->getByLogin($this->app->user()->getAttribute('login'))->id();
-
         $manager = $this->managers->getManagerOf('Authorizations');
 
         $nombreAutorisations = $this->app->config()->get('nombre_autorisations');
@@ -36,7 +33,7 @@ class SecurityController extends BackController
                 $this->app,
                 $manager,
                 $nombreAutorisations,
-                $memberId
+                ''
             );
         }
         catch (\Exception $e)
@@ -45,8 +42,7 @@ class SecurityController extends BackController
         }
 
 
-        $authorizations = $manager->getListOfMember(
-            $memberId,
+        $authorizations = $manager->getListOfAdmin(
             $pagination->getOffset(),
             $nombreAutorisations
         );
@@ -58,14 +54,10 @@ class SecurityController extends BackController
 
     public function executeAdd(HTTPRequest $request)
     {
-        $memberId = $this->managers->getManagerOf('members')
-            ->getByLogin($this->app->user()->getAttribute('login'))->id();
-
         if ($request->method() == 'POST' && $request->postExists('submit'))
         {
             $authorization = new Authorization([
-                'type' => 'member',
-                'member' => $memberId,
+                'type' => 'admin',
                 'description' => $request->postData('description'),
             ]);
         }
@@ -125,7 +117,6 @@ class SecurityController extends BackController
             $authorization = new Authorization([
                 'id' => $storedAuthorization->id(),
                 'type' => $storedAuthorization->type(),
-                'member' => $storedAuthorization->member(),
                 'description' => $request->postData('description'),
             ]);
         }

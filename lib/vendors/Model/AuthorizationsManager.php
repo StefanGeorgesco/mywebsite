@@ -74,6 +74,15 @@ abstract class AuthorizationsManager extends Manager
     abstract public function getListOfMember($member, $debut = -1, $limite = -1);
 
     /**
+    * Méthode retournant la liste des autorisations administrateur
+    * @param $debut int La première autorisations à sélectionner
+    * @param $limite int Le nombre d'autorisations à sélectionner
+    * @return array La liste des autorisations. Chaque entrée est une instance
+    * de Authorization.
+    */
+    abstract public function getListOfAdmin($debut = -1, $limite = -1);
+
+    /**
    * Méthode retournant une autorisations précise.
    * @param $id int L'identifiant de l'autorisation à récupérer
    * @return Authorization L'autorisation demandée | null
