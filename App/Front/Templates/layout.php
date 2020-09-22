@@ -35,6 +35,9 @@
                     <a href="/profile.html">Profil</a>
                 </li>
                 <li>
+                    <a href="/authorizations.html">Autorisations</a>
+                </li>
+                <li>
                     <a href="/members.html">Membres</a>
                 </li>
                 <li>

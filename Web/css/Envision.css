@@ -180,6 +180,7 @@ form span {
 
 .flash_ok {
 	color: green;
+	user-select: text;
 }
 
 .flash_error {

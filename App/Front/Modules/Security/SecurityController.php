@@ -1,14 +1,15 @@
 <?php
-namespace App\Front\Modules\Member;
+namespace App\Front\Modules\Security;
 
 use \OCFram\BackController;
 use \OCFram\HTTPRequest;
 use \OCFram\Pagination;
 use \OCFram\FormHandler;
 use \OCFram\User;
-use \FormBuilder\NNNFormBuilder; ///
+use \Entity\Authorization;
+use \FormBuilder\AuthorizationFormBuilder;
 
-class MemberController extends BackController
+class SecurityController extends BackController
 {
     public function needsAuthentication()
     {
@@ -22,13 +23,21 @@ class MemberController extends BackController
 
     public function executeIndex(HTTPRequest $request)
     {
-        $manager = $this->managers->getManagerOf('Members');
+        $memberId = $this->managers->getManagerOf('members')
+            ->getByLogin($this->app->user()->getAttribute('login'))->id();
 
-        $nombreMembres = $this->app->config()->get('nombre_membres');
+        $manager = $this->managers->getManagerOf('Authorizations');
+
+        $nombreAutorisations = $this->app->config()->get('nombre_autorisations');
 
         try
         {
-            $pagination = new Pagination($this->app, $manager, $nombreMembres);
+            $pagination = new Pagination(
+                $this->app,
+                $manager,
+                $nombreAutorisations,
+                $memberId
+            );
         }
         catch (\Exception $e)
         {
@@ -36,59 +45,55 @@ class MemberController extends BackController
         }
 
 
-        $members = $manager->getList($pagination->getOffset(), $nombreMembres);
+        $authorizations = $manager->getListOfMember(
+            $memberId,
+            $pagination->getOffset(),
+            $nombreAutorisations
+        );
 
-        $this->page->addVar('title', 'Membres');
-        $this->page->addVar('members', $members);
+        $this->page->addVar('title', 'Autorisations');
+        $this->page->addVar('authorizations', $authorizations);
         $this->page->addVar('pagination', $pagination->createView());
     }
 
-    public function executeCreate(HTTPRequest $request)
+    public function executeAdd(HTTPRequest $request)
     {
+        $memberId = $this->managers->getManagerOf('members')
+            ->getByLogin($this->app->user()->getAttribute('login'))->id();
+
         if ($request->method() == 'POST' && $request->postExists('submit'))
         {
-            $member = new Member([
-                'login' => $request->postData('login'),
-                'pass' => $request->postData('pass'),
-                'pass2' => $request->postData('pass2'),
-                'email' => $request->postData('email'),
+            $authorization = new Authorization([
+                'type' => 'member',
+                'member' => $memberId,
+                'description' => $request->postData('description'),
             ]);
         }
         else
         {
-            $member = new Member;
+            $authorization = new Authorization;
         }
 
-        $formBuilder = new NewMemberFormBuilder($member);
+        $formBuilder = new AuthorizationFormBuilder($authorization);
         $formBuilder->build();
 
         $form = $formBuilder->form();
 
         $formHandler = new FormHandler(
             $form,
-            $this->managers->getManagerOf('Members'),
+            $this->managers->getManagerOf('Authorizations'),
             $request
         );
 
         if ($formHandler->process())
         {
             $this->app->user()->setFlash(
-                "Vous êtes maintenant inscrit, merci !
-                Un e-mail d'activation de votre compte a été envoyé
-                à l'adresse que vous avez indiquée."
+                "Votre autorisation a été créée. Veuillez copier ce numéro,
+                car vous ne le reverrez plus :<br />" .
+                $authorization->getFullToken()
             );
 
-            $this->mailer->addVar('title', 'Activation de votre compte');
-            $this->mailer->addVar('login', $member->login());
-            $this->mailer->addVar(
-                'url',
-                $this->app->baseUrl().'member-activate-'.$member->token().'.html'
-            );
-            $this->mailer->setTo($request->postData('email'));
-            $this->mailer->setSubject('Activation de votre compte');
-            $this->mailer->send();
-
-            $this->app->httpResponse()->redirect('.');
+            $this->app->httpResponse()->redirect('/authorizations.html');
         }
         else
         {
@@ -99,52 +104,37 @@ class MemberController extends BackController
                 )
             {
                 $this->app->user()->setFlash(
-                    'Le pseudo ou l\'e-mail est déjà pris.',
+                    'Une erreur s\'est produite.',
                     User::FLASH_ERROR
                 );
             }
         }
 
-        $this->page->addVar('title', 'S\'inscrire');
+        $this->page->addVar('title', 'Nouvelle autorisation');
         $this->page->addVar('form', $form->createView());
-        $this->page->addVar('initial_login', '');
     }
 
     public function executeUpdate(HTTPRequest $request)
     {
-        $manager = $this->managers->getManagerOf('Members');
+        $manager = $this->managers->getManagerOf('Authorizations');
 
-        $storedMember = $manager->getByLogin(
-            $this->app->user()->getAttribute('login')
-        );
+        $storedAuthorization = $manager->get($request->getData('id'));
 
         if ($request->method() == 'POST' && $request->postExists('submit'))
         {
-            $member = new Member([
-                'id' => $storedMember->id(),
-                'login' => $request->postData('login'),
-                'pass' => '********',
-                'pass2' => '********',
-                'email' => $request->postData('email'),
-                'firstName' => trim($request->postData('firstName')),
-                'lastName' => trim($request->postData('lastName')),
-                'birthDate' => $request->postData('birthDate') ?
-                    new \DateTime($request->postData('birthDate')) :
-                    null,
-                'phone' => trim($request->postData('phone')),
-                'website' => trim($request->postData('website')),
-                'housenumber' => trim($request->postData('housenumber')),
-                'street' => trim($request->postData('street')),
-                'postcode' => trim($request->postData('postcode')),
-                'city' => trim($request->postData('city')),
+            $authorization = new Authorization([
+                'id' => $storedAuthorization->id(),
+                'type' => $storedAuthorization->type(),
+                'member' => $storedAuthorization->member(),
+                'description' => $request->postData('description'),
             ]);
         }
         else
         {
-            $member = $storedMember;
+            $authorization = $storedAuthorization;
         }
 
-        $formBuilder = new UpdateMemberFormBuilder($member);
+        $formBuilder = new AuthorizationFormBuilder($authorization);
         $formBuilder->build();
 
         $form = $formBuilder->form();
@@ -157,18 +147,9 @@ class MemberController extends BackController
 
         if ($formHandler->process())
         {
-            $this->app->user()->setFlash('Votre profil a bien été modifié');
-            $this->app->user()->setAttribute('login', $member->login());
-            if (isset($_COOKIE['login']))
-            {
-                setcookie(
-                    'login',
-                    $member->login(),
-                    time() + ConnexionController::AUTOSIGNIN_VALIDITY_TIME,
-                    null, null, false, true
-                );
-            }
-            $this->app->httpResponse()->redirect('/profile.html');
+            $this->app->user()->setFlash('L\'autorisation a bien été modifiée');
+
+            $this->app->httpResponse()->redirect('/authorizations.html');
         }
         else
         {
@@ -178,65 +159,35 @@ class MemberController extends BackController
                 && $form->isValid()
                 )
             {
-                if (
-                    $manager->existsLogin($member->login())
-                    && strtolower($member->login()) !==
-                                        strtolower($storedMember->login())
-                    || $manager->existsEmail($member->email())
-                    && strtolower($member->email()) !==
-                                        strtolower($storedMember->email())
-                    )
-                {
-                    $this->app->user()->setFlash(
-                        'Le pseudo ou l\'e-mail est déjà pris.',
-                        User::FLASH_ERROR
-                    );
-                }
-                else
-                {
-                    $this->app->user()->setFlash(
-                        'Votre profil n\'a pas été modifié...',
-                        User::FLASH_ERROR
-                    );
-                }
+                $this->app->user()->setFlash(
+                    'L\'autorisation n\'a pas été modifiée.',
+                    User::FLASH_ERROR
+                );
             }
         }
 
-        $this->page->addVar('title', 'Modifier mon profil');
+        $this->page->addVar('title', 'Modifier une autorisation');
         $this->page->addVar('form', $form->createView());
-        $this->page->addVar('initial_login', $storedMember->login());
     }
 
     public function executeDelete(HTTPRequest $request)
     {
+        $authorization = $this->managers->getManagerOf('Authorizations')
+            ->get($request->getData('id'));
+
         if ($request->method() == 'POST')
         {
-            $member = $this->managers->getManagerOf('Members')
-            ->getByLogin($this->app->user()->getAttribute('login'));
-
-            $this->managers->getManagerOf('Members')->delete($member);
-            $this->managers->getManagerOf('Comments')
-            ->deleteFromMember($member->id());
-
-            $this->app->user()->setAuthenticated(null, false);
-
-            if (isset($_COOKIE['login']))
-            {
-                setcookie('login', '', time() - 3600);
-            }
-
-            if (isset($_COOKIE['hash_pass']))
-            {
-                setcookie('hash_pass', '', time() - 3600);
-            }
+            $this->managers->getManagerOf('Authorizations')
+                ->delete($authorization);
 
             $this->app->user()->setFlash(
-                'Votre profil et vos commentaires ont bien été supprimés !'
+                'L\'autorisation a bien été supprimée.'
             );
 
-            $this->app->httpResponse()->redirect('/');
+            $this->app->httpResponse()->redirect('/authorizations.html');
         }
 
-        $this->page->addVar('title', 'Supprimer mon profil');
+        $this->page->addVar('title', 'Supprimer une autorisation');
+        $this->page->addVar('authorization', $authorization);
     }
 }

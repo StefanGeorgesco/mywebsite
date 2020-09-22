@@ -40,7 +40,7 @@ class Authorization extends Entity
         );
     }
 
-    public function hasSameContent(Comment $otherAuthorization)
+    public function hasSameContent(Authorization $otherAuthorization)
     {
         return $this->description() == $otherAuthorization->description();
     }

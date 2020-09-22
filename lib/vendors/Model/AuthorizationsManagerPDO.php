@@ -50,11 +50,11 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
         return false;
     }
 
-    public function delete($id)
+    public function delete(Authorization $authorization)
     {
         return $this->dao->exec("
             DELETE FROM authorizations WHERE id=
-        ".(int) $id);
+        ".$authorization->id());
     }
 
     public function deleteFromMember($member)
@@ -67,7 +67,7 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
     public function getListOfMember($member, $debut = -1, $limite = -1)
     {
         $sql = "
-        SELECT token, hashPassToken,
+        SELECT id, token, hashPassToken,
         type, member, description,
         creationDate, updateDate
         FROM authorizations
@@ -109,7 +109,7 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
     public function get($id)
     {
         $q = $this->dao->prepare("
-            SELECT token, hashPassToken,
+            SELECT id, token, hashPassToken,
             type, member, description,
             creationDate, updateDate
             FROM authorizations
@@ -141,7 +141,7 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
     public function getByToken($token)
     {
         $q = $this->dao->prepare("
-            SELECT token, hashPassToken,
+            SELECT id, token, hashPassToken,
             type, member, description,
             creationDate, updateDate
             FROM authorizations
@@ -170,10 +170,14 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
         return null;
     }
 
-    public function count()
+    public function count($member='%')
     {
-        return $this->dao->query("
-            SELECT COUNT(*) FROM authorizations
-        ")->fetchColumn();
+        $q = $this->dao->prepare("
+            SELECT COUNT(*) FROM authorizations WHERE member LIKE :member
+        ");
+        $q->bindValue(':member', $member);
+        $q->execute();
+
+        return $q->fetchColumn();
     }
 }

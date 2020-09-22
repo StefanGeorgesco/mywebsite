@@ -50,10 +50,10 @@ abstract class AuthorizationsManager extends Manager
 
     /**
     * Méthode permettant de supprimer une autorisation.
-    * @param $id int L'identifiant de l'autorisation à supprimer
+    * @param $authorization Authorization L'autorisation à supprimer
     * @return int
     */
-    abstract public function delete($id);
+    abstract public function delete(Authorization $authorization);
 
     /**
     * Méthode permettant de supprimer toutes les autorisations d'un membre
