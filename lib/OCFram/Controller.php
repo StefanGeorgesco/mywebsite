@@ -21,6 +21,11 @@ abstract class Controller extends ApplicationComponent
     {
         $method = 'execute'.ucfirst($this->action);
 
+        if ($this->app->name() == 'API')
+        {
+            $method .= $this->app->httpRequest()->method();
+        }
+
         if (!is_callable([$this, $method]))
         {
             throw new \RuntimeException(
