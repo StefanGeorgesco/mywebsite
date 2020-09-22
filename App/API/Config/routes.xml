@@ -2,8 +2,8 @@
 <routes>
     <route url="/API/login-check\?login=\S*" module="Member" action="checkLogin" ></route>
     <route url="/API/member" module="Member" action="member" ></route>
-    <route url="/API/members(?:\?page=[1-9]\d*)?" module="Member" action="members"></route>
+    <route url="/API/members(?:\?page=\d+)?" module="Member" action="members"></route>
     <route url="/API/members/(\d+)" module="Member" action="members" vars="id"></route>
-    <route url="/API/news(?:\?page=[1-9]\d*)?" module="News" action="news"></route>
+    <route url="/API/news(?:\?page=\d+)?" module="News" action="news"></route>
     <route url="/API/news/(\d+)" module="News" action="news" vars="id"></route>
 </routes>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <routes>
     <route url="/admin/sign-out\.html" module="Connexion" action="signOut" ></route>
-    <route url="/admin/(?:\?page=[1-9]\d*)?" module="News" action="index"></route>
+    <route url="/admin/(?:\?page=\d+)?" module="News" action="index"></route>
     <route url="/admin/news-insert\.html" module="News" action="insert"></route>
     <route url="/admin/news-update-(\d+)\.html" module="News" action="update" vars="id"></route>
     <route url="/admin/news-delete-(\d+)\.html" module="News" action="delete" vars="id"></route>
-    <route url="/admin/members\.html(?:\?page=[1-9]\d*)?" module="Member" action="list"></route>
+    <route url="/admin/members\.html(?:\?page=\d+)?" module="Member" action="list"></route>
     <route url="/admin/member-delete-(\d+)\.html" module="Member" action="deleteMember" vars="id"></route>
-    <route url="/admin/authorizations\.html(?:\?page=[1-9]\d*)?" module="Security" action="index"></route>
+    <route url="/admin/authorizations\.html(?:\?page=\d+)?" module="Security" action="index"></route>
     <route url="/admin/authorization-add\.html" module="Security" action="add"></route>
     <route url="/admin/authorization-update-(\d+)\.html" module="Security" action="update" vars="id"></route>
     <route url="/admin/authorization-delete-(\d+)\.html" module="Security" action="delete" vars="id"></route>

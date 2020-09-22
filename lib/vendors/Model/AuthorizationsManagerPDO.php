@@ -212,8 +212,9 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
 
     public function count($member='%')
     {
+        $whereClause = $member == '' ? "type='admin'" : "member LIKE :member";
         $q = $this->dao->prepare("
-            SELECT COUNT(*) FROM authorizations WHERE member LIKE :member
+            SELECT COUNT(*) FROM authorizations WHERE $whereClause
         ");
         $q->bindValue(':member', $member);
         $q->execute();

@@ -23,7 +23,8 @@ class Pagination extends ApplicationComponent
         $this->setSelect($select);
         $this->setSpread($spread);
 
-        if ($this->getPage() > $this->getNumberOfPages())
+        if ($this->getPage() < 1 ||
+            $this->getPage() > $this->getNumberOfPages())
         {
             throw new \Exception("Pagination error", 1);
         }
@@ -104,9 +105,9 @@ class Pagination extends ApplicationComponent
     public function getPage()
     {
         $page = $this->app->httpRequest()->getData('page');
-        if (!$page) $page = 1;
+        if (is_null($page) || !is_numeric($page)) $page = 1;
 
-        return max(1, (int) $page);
+        return (int) $page;
     }
 
     public function getNumberOfPages()

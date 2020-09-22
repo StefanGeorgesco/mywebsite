@@ -38,7 +38,7 @@ class MemberController extends APIController
 
         if ($authorization->isAdmin())
         {
-            $this->app->httpResponse()->jsonError(404);
+            $this->app->httpResponse()->jsonError(404, 'user is not a member');
         }
 
         $membersManager = $this->managers->getManagerOf('Members');
@@ -110,7 +110,8 @@ class MemberController extends APIController
             }
             else
             {
-                $this->app->httpResponse()->jsonError(404);
+                $this->app->httpResponse()
+                    ->jsonError(404, 'this user does not exist');
             }
         }
         else
@@ -127,7 +128,8 @@ class MemberController extends APIController
             }
             catch (\Exception $e)
             {
-                $this->app->httpResponse()->jsonError(404);
+                $this->app->httpResponse()
+                    ->jsonError(404, 'this page does not exist');
             }
 
             $members = $membersManager->getList(

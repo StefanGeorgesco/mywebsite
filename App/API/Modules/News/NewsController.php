@@ -36,7 +36,8 @@ class NewsController extends APIController
             }
             else
             {
-                $this->app->httpResponse()->jsonError(404);
+                $this->app->httpResponse()
+                    ->jsonError(404, 'this news does not exist');
             }
         }
         else
@@ -53,7 +54,8 @@ class NewsController extends APIController
             }
             catch (\Exception $e)
             {
-                $this->app->httpResponse()->jsonError(404);
+                $this->app->httpResponse()
+                    ->jsonError(404, 'this page does not exist');
             }
 
             $newsList = $newsManager->getList(
@@ -102,7 +104,7 @@ class NewsController extends APIController
         {
             if (!$authorization->isAdmin())
             {
-                $this->app->httpResponse()->jsonError(401);
+                $this->app->httpResponse()->jsonError(401, 'user is not admin');
             }
 
             $news = new News($request->requestBodyData());

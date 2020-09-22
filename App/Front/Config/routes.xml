@@ -2,8 +2,8 @@
 <routes>
     <route url="/sign-in\.html" module="Connexion" action="index"></route>
     <route url="/sign-out\.html" module="Connexion" action="signOut"></route>
-    <route url="/(?:\?page=[1-9]\d*)?" module="News" action="index"></route>
-    <route url="/news-(\d+)\.html(?:\?page=[1-9]\d*)?" module="News" action="show" vars="id"></route>
+    <route url="/(?:\?page=\d+)?" module="News" action="index"></route>
+    <route url="/news-(\d+)\.html(?:\?page=\d+)?" module="News" action="show" vars="id"></route>
     <route url="/comment-(\d+)\.html" module="News" action="insertComment" vars="news"></route>
     <route url="/comment-update-(\d+)\.html" module="News" action="updateComment" vars="id"></route>
     <route url="/comment-delete-(\d+)\.html" module="News" action="deleteComment" vars="id"></route>
@@ -13,11 +13,11 @@
     <route url="/renewpasswordlink-send\.html" module="Member" action="generateRenewPasswordLink"></route>
     <route url="/password-renew-(\S+)\.html" module="Member" action="renewPassword" vars="token"></route>
     <route url="/profile\.html" module="Member" action="index"></route>
-    <route url="/members\.html(?:\?page=[1-9]\d*)?" module="Member" action="list"></route>
+    <route url="/members\.html(?:\?page=\d+)?" module="Member" action="list"></route>
     <route url="/member-update\.html" module="Member" action="updateMember"></route>
     <route url="/member-delete\.html" module="Member" action="deleteMember"></route>
     <route url="/password-change\.html" module="Member" action="changePassword"></route>
-    <route url="/authorizations\.html(?:\?page=[1-9]\d*)?" module="Security" action="index"></route>
+    <route url="/authorizations\.html(?:\?page=\d+)?" module="Security" action="index"></route>
     <route url="/authorization-add\.html" module="Security" action="add"></route>
     <route url="/authorization-update-(\d+)\.html" module="Security" action="update" vars="id"></route>
     <route url="/authorization-delete-(\d+)\.html" module="Security" action="delete" vars="id"></route>

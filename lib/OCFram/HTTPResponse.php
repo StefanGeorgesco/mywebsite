@@ -33,7 +33,7 @@ class HTTPResponse extends ApplicationComponent
         $this->send();
     }
 
-    public function jsonError($code)
+    public function jsonError($code, string $details = '')
     {
         $code = (string) $code;
         $message = self::HTTP_RESPONSES[$code];
@@ -43,6 +43,11 @@ class HTTPResponse extends ApplicationComponent
         $response = array(
             'message' => $message,
         );
+
+        if ($details)
+        {
+            $response['details'] = $details;
+        }
 
         $this->setJson(json_encode($response));
 
