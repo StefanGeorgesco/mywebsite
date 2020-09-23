@@ -116,6 +116,58 @@ class NewsController extends APIController
         $this->setResponse($response);
     }
 
+    public function executeNewsPATCH(HTTPRequest $request)
+    {
+        $authorization = $this->getAuthorization();
+
+        if (!$authorization || !$authorization->isAdmin())
+        {
+            $this->exitWithError(401, 'user is not admin');
+        }
+
+        if (!$request->getExists('id'))
+        {
+            $this->exitWithError(400, 'news id not provided');
+        }
+
+        $newsId = $request->getData('id');
+
+        if (!($storedNews = $this->managers->getManagerOf('News')->get($newsId)))
+        {
+            $this->exitWithError(404, "news $newsId does not exist");
+        }
+
+        $news = new News(
+            array_merge(
+                $this->dismount($storedNews),
+                $request->requestBodyData()
+                )
+        );
+
+        if (!$news->isValid())
+        {
+            $this->exitWithError(400, 'patch data incorrect');
+        }
+        elseif ($news->hasSameContent($storedNews))
+        {
+            $response = array(
+                'message' => 'news content is identical (not updated)',
+            );
+        }
+        elseif ($this->managers->getManagerOf('News')->save($news))
+        {
+            $response = $this->dismount(
+                $this->managers->getManagerOf('News')->get($news->id())
+            );
+        }
+        else
+        {
+            $this->exitWithError(500);
+        }
+
+        $this->setResponse($response);
+    }
+
     public function executeNewsDELETE(HTTPRequest $request)
     {
         $authorization = $this->getAuthorization();
