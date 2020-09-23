@@ -124,22 +124,41 @@ class NewsController extends BackController
 
     public function executeDeleteComment(HTTPRequest $request)
     {
-        $news = $this->managers->getManagerOf('Comments')
-            ->get($request->getData('id'))->news();
-        $this->managers->getManagerOf('Comments')->delete($request->getData('id'));
+        $comment = $this->managers->getManagerOf('Comments')
+            ->get($request->getData('id'));
+        $news = $comment->news();
+        $member = $this->managers->getManagerOf('Members')
+            ->getByLogin($this->app->user()->getAttribute('login'));
 
-        $this->app->user()->setFlash('Le commentaire a bien été supprimé !');
-
-        $this->app->httpResponse()->redirect('/news-'.$news.'.html');
+        if ($comment->member() == $member->id())
+        {
+            $this->managers->getManagerOf('Comments')->delete($request->getData('id'));
+            $this->app->user()->setFlash('Le commentaire a bien été supprimé !');
+            $this->app->httpResponse()->redirect('/news-'.$news.'.html');
+        }
+        else
+        {
+            $this->app->user()->setFlash(
+                'Vous n\'êtes pas l\'auteur de ce commentaire.',
+                User::FLASH_ERROR
+            );
+            $this->app->httpResponse()->redirect('/');
+        }
     }
 
     public function processForm(HTTPRequest $request)
     {
+        $member = $this->managers->getManagerOf('Members')
+            ->getByLogin($this->app->user()->getAttribute('login'));
+
+        $id = $request->getData('id');
+
+        $storedComment = $id ?
+            $this->managers->getManagerOf('Comments')->get($id) :
+            null;
+
         if ($request->method() == 'POST' && $request->postExists('submit'))
         {
-            $member = $this->managers->getManagerOf('Members')
-                ->getByLogin($this->app->user()->getAttribute('login'));
-
             $comment = new Comment([
                 'member' => $member ? $member->id() : null,
                 'contents' => trim($request->postData('contents'))
@@ -150,29 +169,19 @@ class NewsController extends BackController
                 $comment->setNews($request->getData('news'));
             }
 
-            if ($request->getExists('id'))
+            if ($id)
             {
-                $comment->setId($request->getData('id'));
-                $comment->setAuthor(
-                    $this->managers->getManagerOf('Comments')
-                    ->get($request->getData('id'))->author()
-                );
-                $comment->setCreationDate(
-                    $this->managers->getManagerOf('Comments')
-                    ->get($request->getData('id'))->creationDate()
-                );
-                $comment->setUpdateDate(
-                    $this->managers->getManagerOf('Comments')
-                    ->get($request->getData('id'))->updateDate()
-                );
+                $comment->setId($id);
+                $comment->setAuthor($storedComment->author());
+                $comment->setCreationDate($storedComment->creationDate());
+                $comment->setUpdateDate($storedComment->updateDate());
             }
         }
         else
         {
-            if ($request->getExists('id'))
+            if ($id)
             {
-                $comment = $this->managers->getManagerOf('Comments')
-                ->get($request->getData('id'));
+                $comment = $storedComment;
             }
             else
             {
@@ -185,11 +194,10 @@ class NewsController extends BackController
             $news = $this->managers->getManagerOf(
                 'News')->get($request->getData('news'));
         }
-        elseif ($request->getExists('id'))
+        elseif ($id)
         {
             $news = $this->managers->getManagerOf(
-                'News')->get($this->managers->getManagerOf('Comments')
-                ->get($request->getData('id'))->news());
+                'News')->get($storedComment->news());
         }
 
         $formBuilder = new CommentFormBuilder($comment);
@@ -205,7 +213,15 @@ class NewsController extends BackController
 
         $isNew = $comment->isNew();
 
-        if ($formHandler->process())
+        if (!$isNew && $comment->member() != $member->id())
+        {
+            $this->app->user()->setFlash(
+                'Vous n\'êtes pas l\'auteur de ce commentaire.',
+                User::FLASH_ERROR
+            );
+            $this->app->httpResponse()->redirect('/');
+        }
+        elseif ($formHandler->process())
         {
             $this->app->user()->setFlash(
                 $isNew ?
