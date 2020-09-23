@@ -146,12 +146,12 @@ class NewsController extends APIController
 
         if (!$news->isValid())
         {
-            $this->exitWithError(400, 'patch data incorrect');
+            $this->exitWithError(400, 'news data incorrect');
         }
         elseif ($news->hasSameContent($storedNews))
         {
             $response = array(
-                'message' => 'news content is identical (not updated)',
+                'message' => 'news data is identical (not updated)',
             );
         }
         elseif ($this->managers->getManagerOf('News')->save($news))
@@ -258,6 +258,67 @@ class NewsController extends APIController
         $this->setResponse($response);
     }
 
+    public function executeCommentsPATCH(HTTPRequest $request)
+    {
+        $authorization = $this->getAuthorization();
+
+        if (!$authorization)
+        {
+            $this->exitWithError(401);
+        }
+
+        if (!$request->getExists('id'))
+        {
+            $this->exitWithError(400, 'comment id not provided');
+        }
+
+        $commentId = $request->getData('id');
+
+        $storedComment = $this->managers->getManagerOf('Comments')
+            ->get($commentId);
+
+        if (!$storedComment)
+        {
+            $this->exitWithError(404, "comment $commentId does not exist");
+        }
+
+        if ($authorization->isMember() &&
+            $storedComment['member'] != $authorization->member())
+        {
+            $this->exitWithError(401, "user does not own comment $commentId");
+        }
+
+        $comment = new Comment(
+            array_merge(
+                $this->dismount($storedComment),
+                $request->requestBodyData()
+                )
+        );
+
+        if (!$comment->isValid())
+        {
+            $this->exitWithError(400, 'comment data incorrect');
+        }
+        elseif ($comment->hasSameContent($storedComment))
+        {
+            $response = array(
+                'message' => 'comment data is identical (not updated)',
+            );
+        }
+        elseif ($this->managers->getManagerOf('Comments')->save($comment))
+        {
+            $response = $this->dismount(
+                $this->managers->getManagerOf('Comments')->get($comment->id())
+            );
+        }
+        else
+        {
+            $this->exitWithError(500);
+        }
+
+        $this->setResponse($response);
+    }
+
     public function executeCommentsDELETE(HTTPRequest $request)
     {
         $authorization = $this->getAuthorization();
@@ -283,7 +344,7 @@ class NewsController extends APIController
         if ($authorization->isMember() &&
             $comment['member'] != $authorization->member())
         {
-            $this->exitWithError(401, "user does not own commet $commentId");
+            $this->exitWithError(401, "user does not own comment $commentId");
         }
 
         if ($this->managers->getManagerOf('Comments')->delete($commentId))
