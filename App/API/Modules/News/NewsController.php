@@ -98,7 +98,33 @@ class NewsController extends APIController
 
         if ($request->getExists('id'))
         {
-            $this->app->httpResponse()->jsonError(400);
+            if (!$authorization->isMember())
+            {
+                $this->app->httpResponse()
+                    ->jsonError(401, 'user is not a member');
+            }
+
+            $data = array_merge(
+                $request->requestBodyData(),
+                [
+                    'news' => $request->getData('id'),
+                    'member' => $authorization->member()
+                ]
+            );
+
+            $comment = new Comment($data);
+
+            if ($this->managers->getManagerOf('Comments')->save($comment))
+            {
+                $response = $this->dismount(
+                    $this->managers->getManagerOf('Comments')
+                        ->get($comment->id())
+                );
+            }
+            else
+            {
+                $this->app->httpResponse()->jsonError(400);
+            }
         }
         else
         {

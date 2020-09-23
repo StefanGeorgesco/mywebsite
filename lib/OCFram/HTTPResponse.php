@@ -28,7 +28,7 @@ class HTTPResponse extends ApplicationComponent
         $this->page = new Page($this->app);
         $this->page->setContentFile(__DIR__.'/../../Errors/404.html');
 
-        $this->addHeader('HTTP/1.0 404 Not Found');
+        $this->addHeader('HTTP/1.1 404 Not Found');
 
         $this->send();
     }
@@ -38,7 +38,7 @@ class HTTPResponse extends ApplicationComponent
         $code = (string) $code;
         $message = self::HTTP_RESPONSES[$code];
 
-        $this->addHeader("HTTP/1.0 $code $message");
+        $this->addHeader("HTTP/1.1 $code $message");
 
         $response = array(
             'message' => $message,
