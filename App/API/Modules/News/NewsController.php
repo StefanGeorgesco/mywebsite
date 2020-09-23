@@ -101,10 +101,17 @@ class NewsController extends APIController
                 $this->exitWithError(401, 'user is not a member');
             }
 
+            $newsId = $request->getData('id');
+
+            if (!$this->managers->getManagerOf('News')->get($newsId))
+            {
+                $this->exitWithError(404, "news $newsId does not exist");
+            }
+
             $data = array_merge(
                 $request->requestBodyData(),
                 [
-                    'news' => $request->getData('id'),
+                    'news' => $newsId,
                     'member' => $authorization->member()
                 ]
             );
