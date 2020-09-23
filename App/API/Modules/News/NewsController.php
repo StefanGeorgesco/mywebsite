@@ -154,4 +154,84 @@ class NewsController extends APIController
         $this->setResponseCode(201);
         $this->setResponse($response);
     }
+
+    public function executeNewsDELETE(HTTPRequest $request)
+    {
+        $authorization = $this->getAuthorization();
+
+        if (!$authorization || !$authorization->isAdmin())
+        {
+            $this->exitWithError(401, 'user is not admin');
+        }
+
+        if (!$request->getExists('id'))
+        {
+            $this->exitWithError(400, 'news id not provided');
+        }
+
+        $newsId = $request->getData('id');
+
+        if (!$this->managers->getManagerOf('News')->get($newsId))
+        {
+            $this->exitWithError(404, "news $newsId does not exist");
+        }
+
+        if ($this->managers->getManagerOf('News')->delete($newsId) &&
+            $this->managers->getManagerOf('Comments')->deleteFromNews($newsId))
+        {
+            $response = array(
+                'message' =>
+                "news $newsId and attached cooments have been deleted"
+            );
+        }
+        else
+        {
+            $this->exitWithError(500);
+        }
+
+        $this->setResponse($response);
+    }
+
+    public function executeCommentsDELETE(HTTPRequest $request)
+    {
+        $authorization = $this->getAuthorization();
+
+        if (!$authorization)
+        {
+            $this->exitWithError(401);
+        }
+
+        if (!$request->getExists('id'))
+        {
+            $this->exitWithError(400, 'comment id not provided');
+        }
+
+        $commentId = $request->getData('id');
+        $comment = $this->managers->getManagerOf('Comments')->get($commentId);
+
+        if (!$comment)
+        {
+            $this->exitWithError(404, "comment $commentId does not exist");
+        }
+
+        if ($authorization->isMember() &&
+            $comment['member'] != $authorization->member())
+        {
+            $this->exitWithError(401, "user does not own commet $commentId");
+        }
+
+        if ($this->managers->getManagerOf('Comments')->delete($commentId))
+        {
+            $response = array(
+                'message' =>
+                "comment $commentId has been deleted"
+            );
+        }
+        else
+        {
+            $this->exitWithError(500);
+        }
+
+        $this->setResponse($response);
+    }
 }
