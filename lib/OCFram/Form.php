@@ -197,9 +197,29 @@ class Form
         return $valid;
     }
 
+    public function errors()
+    {
+        return array_values(
+            array_filter(
+                array_map(
+                    function ($field)
+                    {
+                        return $field->errorMessage();
+                    },
+                    $this->fields()
+                )
+            )
+        );
+    }
+
     public function entity()
     {
         return $this->entity;
+    }
+
+    public function fields()
+    {
+        return $this->fields;
     }
 
     public function setEntity(Entity $entity)

@@ -186,6 +186,11 @@ abstract class Field
 
     // GETTERS
 
+    public function errorMessage()
+    {
+        return $this->errorMessage;
+    }
+
     public function label()
     {
         return $this->label;

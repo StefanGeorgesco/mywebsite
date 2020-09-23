@@ -72,9 +72,9 @@ abstract class APIController extends Controller
         $this->addHeader("HTTP/1.1 $code $message");
     }
 
-    public function exitWithError($code, string $details = '')
+    public function exitWithError($code, string $details = '', array $errors = [])
     {
-        $this->app->httpResponse()->jsonError($code, $details);
+        $this->app->httpResponse()->jsonError($code, $details, $errors);
     }
 
     public function json()

@@ -6,6 +6,8 @@ use \OCFram\HTTPRequest;
 use \OCFram\Pagination;
 use \Entity\News;
 use \Entity\Comment;
+use \FormBuilder\NewsFormBuilder;
+use \FormBuilder\CommentFormBuilder;
 
 class NewsController extends APIController
 {
@@ -101,6 +103,15 @@ class NewsController extends APIController
 
         $news = new News($request->requestBodyData());
 
+        $formBuilder = new NewsFormBuilder($news);
+        $formBuilder->build();
+        $form = $formBuilder->form();
+
+        if (!$form->isValid())
+        {
+            $this->exitWithError(400, 'news data incorrect', $form->errors());
+        }
+
         if ($this->managers->getManagerOf('News')->save($news))
         {
             $response = $this->dismount(
@@ -144,9 +155,13 @@ class NewsController extends APIController
                 )
         );
 
-        if (!$news->isValid())
+        $formBuilder = new NewsFormBuilder($news);
+        $formBuilder->build();
+        $form = $formBuilder->form();
+
+        if (!$form->isValid())
         {
-            $this->exitWithError(400, 'news data incorrect');
+            $this->exitWithError(400, 'news data incorrect', $form->errors());
         }
         elseif ($news->hasSameContent($storedNews))
         {
@@ -242,6 +257,15 @@ class NewsController extends APIController
 
         $comment = new Comment($data);
 
+        $formBuilder = new CommentFormBuilder($comment);
+        $formBuilder->build();
+        $form = $formBuilder->form();
+
+        if (!$form->isValid())
+        {
+            $this->exitWithError(400, 'comment data incorrect', $form->errors());
+        }
+
         if ($this->managers->getManagerOf('Comments')->save($comment))
         {
             $response = $this->dismount(
@@ -295,9 +319,13 @@ class NewsController extends APIController
                 )
         );
 
-        if (!$comment->isValid())
+        $formBuilder = new CommentFormBuilder($comment);
+        $formBuilder->build();
+        $form = $formBuilder->form();
+
+        if (!$form->isValid())
         {
-            $this->exitWithError(400, 'comment data incorrect');
+            $this->exitWithError(400, 'comment data incorrect', $form->errors());
         }
         elseif ($comment->hasSameContent($storedComment))
         {
