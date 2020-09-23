@@ -19,7 +19,14 @@ class APIApplication extends Application
 
         $controller = $this->getController();
 
-        $controller->execute();
+        try
+        {
+            $controller->execute();
+        }
+        catch (\Exception $e)
+        {
+            $this->httpResponse->jsonError(400);
+        }
 
         $this->httpResponse->addHeaders($controller->headers());
         $this->httpResponse->setJson($controller->json());
