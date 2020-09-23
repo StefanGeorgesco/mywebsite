@@ -7,6 +7,8 @@ class HTTPResponse extends ApplicationComponent
     protected $json;
 
     const HTTP_RESPONSES = [
+        '200' => 'OK',
+        '201' => 'Created',
         '400' => 'Bad Request',
         '401' => 'Unauthorized',
         '404' => 'Not Found'
@@ -15,6 +17,14 @@ class HTTPResponse extends ApplicationComponent
     public function addHeader($header)
     {
         header($header);
+    }
+
+    public function addHeaders($headers)
+    {
+        foreach ($headers as $header)
+        {
+            $this->addHeader($header);
+        }
     }
 
     public function redirect($location)

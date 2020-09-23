@@ -2,10 +2,12 @@
 namespace OCFram;
 
 use \Entity\Authorization;
+use \OCFram\HTTPResponse;
 
 abstract class APIController extends Controller
 {
     protected $response;
+    protected $headers = [];
 
     protected function getAuthorization()
     {
@@ -43,24 +45,6 @@ abstract class APIController extends Controller
         return $authorization;
     }
 
-    public function json()
-    {
-        return json_encode(
-            $this->response(),
-            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-        );
-    }
-
-    public function response()
-    {
-        return $this->response;
-    }
-
-    public function setResponse($response)
-    {
-        $this->response = $response;
-    }
-
     protected function dismount($object) {
         $reflectionClass = new \ReflectionClass(get_class($object));
 
@@ -73,5 +57,50 @@ abstract class APIController extends Controller
         }
 
         return $array;
+    }
+
+    public function addHeader($header)
+    {
+        $this->headers[] = $header;
+    }
+
+    public function setResponseCode($code)
+    {
+        $code = (string) $code;
+        $message = HTTPResponse::HTTP_RESPONSES[$code];
+
+        $this->addHeader("HTTP/1.1 $code $message");
+    }
+
+    public function exitWithError($code, string $details = '')
+    {
+        $this->app->httpResponse()->jsonError($code, $details);
+    }
+
+    public function json()
+    {
+        return json_encode(
+            $this->response(),
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
+    }
+
+    // GETTERS
+
+    public function headers()
+    {
+        return $this->headers;
+    }
+
+    public function response()
+    {
+        return $this->response;
+    }
+
+    // SETTERS
+
+    public function setResponse($response)
+    {
+        $this->response = $response;
     }
 }

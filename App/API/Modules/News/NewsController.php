@@ -36,8 +36,7 @@ class NewsController extends APIController
             }
             else
             {
-                $this->app->httpResponse()
-                    ->jsonError(404, 'this news does not exist');
+                $this->exitWithError(404, 'this news does not exist');
             }
         }
         else
@@ -54,8 +53,7 @@ class NewsController extends APIController
             }
             catch (\Exception $e)
             {
-                $this->app->httpResponse()
-                    ->jsonError(404, 'this page does not exist');
+                $this->exitWithError(404, 'this page does not exist');
             }
 
             $newsList = $newsManager->getList(
@@ -93,15 +91,14 @@ class NewsController extends APIController
 
         if (!$authorization)
         {
-            $this->app->httpResponse()->jsonError(401);
+            $this->exitWithError(401);
         }
 
         if ($request->getExists('id'))
         {
             if (!$authorization->isMember())
             {
-                $this->app->httpResponse()
-                    ->jsonError(401, 'user is not a member');
+                $this->exitWithError(401, 'user is not a member');
             }
 
             $data = array_merge(
@@ -123,14 +120,14 @@ class NewsController extends APIController
             }
             else
             {
-                $this->app->httpResponse()->jsonError(400);
+                $this->exitWithError(400);
             }
         }
         else
         {
             if (!$authorization->isAdmin())
             {
-                $this->app->httpResponse()->jsonError(401, 'user is not admin');
+                $this->exitWithError(401, 'user is not admin');
             }
 
             $news = new News($request->requestBodyData());
@@ -143,10 +140,11 @@ class NewsController extends APIController
             }
             else
             {
-                $this->app->httpResponse()->jsonError(400);
+                $this->exitWithError(400);
             }
         }
 
+        $this->setResponseCode(201);
         $this->setResponse($response);
     }
 }

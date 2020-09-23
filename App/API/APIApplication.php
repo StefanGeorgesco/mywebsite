@@ -21,6 +21,7 @@ class APIApplication extends Application
 
         $controller->execute();
 
+        $this->httpResponse->addHeaders($controller->headers());
         $this->httpResponse->setJson($controller->json());
         $this->httpResponse->sendJson();
     }
