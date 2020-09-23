@@ -127,7 +127,7 @@ class NewsController extends APIController
             }
             else
             {
-                $this->exitWithError(400);
+                $this->exitWithError(500);
             }
         }
         else
@@ -147,7 +147,7 @@ class NewsController extends APIController
             }
             else
             {
-                $this->exitWithError(400);
+                $this->exitWithError(500);
             }
         }
 

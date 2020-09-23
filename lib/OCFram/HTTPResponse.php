@@ -11,7 +11,8 @@ class HTTPResponse extends ApplicationComponent
         '201' => 'Created',
         '400' => 'Bad Request',
         '401' => 'Unauthorized',
-        '404' => 'Not Found'
+        '404' => 'Not Found',
+        '500' => 'Internal Server Error'
     ];
 
     public function addHeader($header)
@@ -104,8 +105,8 @@ class HTTPResponse extends ApplicationComponent
         $domain = null,
         $secure = false,
         $httpOnly = true
-        )
-        {
-            setcookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
-        }
+    )
+    {
+        setcookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
     }
+}
