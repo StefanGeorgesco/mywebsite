@@ -87,68 +87,29 @@ class NewsController extends APIController
 
     public function executeNewsPOST(HTTPRequest $request)
     {
-        $authorization = $this->getAuthorization();
-
-        if (!$authorization)
-        {
-            $this->exitWithError(401);
-        }
-
         if ($request->getExists('id'))
         {
-            if (!$authorization->isMember())
-            {
-                $this->exitWithError(401, 'user is not a member');
-            }
+            $this->exitWithError(400);
+        }
 
-            $newsId = $request->getData('id');
+        $authorization = $this->getAuthorization();
 
-            if (!$this->managers->getManagerOf('News')->get($newsId))
-            {
-                $this->exitWithError(404, "news $newsId does not exist");
-            }
+        if (!$authorization || !$authorization->isAdmin())
+        {
+            $this->exitWithError(401, 'user is not admin');
+        }
 
-            $data = array_merge(
-                $request->requestBodyData(),
-                [
-                    'news' => $newsId,
-                    'member' => $authorization->member()
-                ]
+        $news = new News($request->requestBodyData());
+
+        if ($this->managers->getManagerOf('News')->save($news))
+        {
+            $response = $this->dismount(
+                $this->managers->getManagerOf('News')->get($news->id())
             );
-
-            $comment = new Comment($data);
-
-            if ($this->managers->getManagerOf('Comments')->save($comment))
-            {
-                $response = $this->dismount(
-                    $this->managers->getManagerOf('Comments')
-                        ->get($comment->id())
-                );
-            }
-            else
-            {
-                $this->exitWithError(500);
-            }
         }
         else
         {
-            if (!$authorization->isAdmin())
-            {
-                $this->exitWithError(401, 'user is not admin');
-            }
-
-            $news = new News($request->requestBodyData());
-
-            if ($this->managers->getManagerOf('News')->save($news))
-            {
-                $response = $this->dismount(
-                    $this->managers->getManagerOf('News')->get($news->id())
-                );
-            }
-            else
-            {
-                $this->exitWithError(500);
-            }
+            $this->exitWithError(500);
         }
 
         $this->setResponseCode(201);
@@ -189,6 +150,59 @@ class NewsController extends APIController
             $this->exitWithError(500);
         }
 
+        $this->setResponse($response);
+    }
+
+    public function executeCommentsPOST(HTTPRequest $request)
+    {
+        if ($request->getExists('id'))
+        {
+            $this->exitWithError(400);
+        }
+
+        $authorization = $this->getAuthorization();
+
+        if (!$authorization || !$authorization->isMember())
+        {
+            $this->exitWithError(401, 'user is not a member');
+        }
+
+        $data = $request->requestBodyData();
+
+        if (!isset($data['news']))
+        {
+            $this->exitWithError(400, 'news id not provided');
+        }
+
+        $newsId = $data['news'];
+
+        if (!is_numeric($newsId) || $newsId < 0)
+        {
+            $this->exitWithError(400, 'news id incorrect');
+        }
+
+        if (!$this->managers->getManagerOf('News')->get($newsId))
+        {
+            $this->exitWithError(404, "news $newsId does not exist");
+        }
+
+        $data['member'] = $authorization->member();
+
+        $comment = new Comment($data);
+
+        if ($this->managers->getManagerOf('Comments')->save($comment))
+        {
+            $response = $this->dismount(
+                $this->managers->getManagerOf('Comments')
+                    ->get($comment->id())
+            );
+        }
+        else
+        {
+            $this->exitWithError(500);
+        }
+
+        $this->setResponseCode(201);
         $this->setResponse($response);
     }
 
