@@ -23,7 +23,7 @@ class APIApplication extends Application
         {
             $controller->execute();
         }
-        catch (\Exception $e)
+        catch (\RuntimeException $e)
         {
             $this->httpResponse->jsonError(400);
         }

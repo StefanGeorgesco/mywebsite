@@ -39,7 +39,7 @@ class SecurityController extends BackController
                 $memberId
             );
         }
-        catch (\Exception $e)
+        catch (\RuntimeException $e)
         {
             $this->app->httpResponse()->redirect404();
         }

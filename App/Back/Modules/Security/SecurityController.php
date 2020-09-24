@@ -36,7 +36,7 @@ class SecurityController extends BackController
                 ''
             );
         }
-        catch (\Exception $e)
+        catch (\RuntimeException $e)
         {
             $this->app->httpResponse()->redirect404();
         }

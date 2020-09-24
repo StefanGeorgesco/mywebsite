@@ -45,7 +45,15 @@ class HTTPRequest extends ApplicationComponent
 
     public function requestBodyData()
     {
-        return json_decode(file_get_contents('php://input') , true);
+        $data = json_decode(file_get_contents('php://input') , true);
+
+        if (is_null($data))
+        {
+            throw new \RuntimeException("bad json request body data", 1);
+
+        }
+        
+        return $data;
     }
 
     public function authorizationToken()

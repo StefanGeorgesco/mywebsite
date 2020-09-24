@@ -32,7 +32,7 @@ class NewsController extends BackController
         {
             $pagination = new Pagination($this->app, $manager, $nombreNews);
         }
-        catch (\Exception $e)
+        catch (\RuntimeException $e)
         {
             $this->app->httpResponse()->redirect404();
         }

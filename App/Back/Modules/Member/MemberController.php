@@ -30,7 +30,7 @@ class MemberController extends BackController
                 $this->app, $manager, $nombreMembres, false
             );
         }
-        catch (\Exception $e)
+        catch (\RuntimeException $e)
         {
             $this->app->httpResponse()->redirect404();
         }

@@ -334,7 +334,7 @@ class MemberController extends BackController
         {
             $pagination = new Pagination($this->app, $manager, $nombreMembres);
         }
-        catch (\Exception $e)
+        catch (\RuntimeException $e)
         {
             $this->app->httpResponse()->redirect404();
         }

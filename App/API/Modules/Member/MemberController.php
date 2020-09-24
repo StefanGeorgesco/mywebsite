@@ -5,6 +5,7 @@ use \OCFram\APIController;
 use \OCFram\HTTPRequest;
 use \OCFram\Pagination;
 use \Entity\Member;
+use \FormBuilder\UpdateMemberFormBuilder;
 
 class MemberController extends APIController
 {
@@ -70,6 +71,117 @@ class MemberController extends APIController
         $this->setResponse($response);
     }
 
+    public function executeMemberPATCH(HTTPRequest $request)
+    {
+        $authorization = $this->getAuthorization();
+
+        if (!$authorization || !$authorization->isMember())
+        {
+            $this->exitWithError(401, 'user is not member');
+        }
+
+        $manager = $this->managers->getManagerOf('Members');
+
+        $storedMember = $manager->getById($authorization->member());
+
+        if (!$storedMember)
+        {
+            $this->exitWithError(
+                404,
+                "member does not exist"
+            );
+        }
+
+        $storedMemberData = $this->dismount($storedMember);
+
+        $storedMemberData['pass'] = "********";
+        $storedMemberData['pass2'] = "********";
+
+        unset(
+            $storedMemberData['hashPass'],
+            $storedMemberData['active'],
+            $storedMemberData['token'],
+            $storedMemberData['tokenExpiryTime']
+        );
+
+        $data = $request->requestBodyData();
+
+        if (isset($data['birthDate']))
+        {
+            if ($data['birthDate'] == '')
+            {
+                $data['birthDate'] = null;
+            }
+            else
+            {
+                try
+                {
+                    $data['birthDate'] = new \DateTime($data['birthDate']);
+                }
+                catch (\Exception $e)
+                {
+                    $data['birthDate'] = new \DateTime("1800-01");
+                }
+            }
+        }
+
+        $member = new Member(
+            array_merge(
+                $storedMemberData,
+                $data
+                )
+        );
+
+        $formBuilder = new UpdateMemberFormBuilder($member);
+        $formBuilder->build();
+        $form = $formBuilder->form();
+
+        if (!$form->isValid())
+        {
+            $this->exitWithError(400, 'member data incorrect', $form->errors());
+        }
+        elseif ($member->hasSameContent($storedMember))
+        {
+            $response = array(
+                'message' => 'member data is identical (not updated)',
+            );
+        }
+        elseif (
+            $manager->existsLogin($member->login())
+            && strtolower($member->login()) !==
+                                strtolower($storedMember->login())
+            || $manager->existsEmail($member->email())
+            && strtolower($member->email()) !==
+                                strtolower($storedMember->email())
+            )
+        {
+            $response = array(
+                'message' => 'login or email already exists (member not updated)',
+            );
+        }
+        elseif ($manager->save($member))
+        {
+            $response = $this->dismount(
+                $manager->getById($member->id())
+            );
+
+            unset(
+                $response['pass'],
+                $response['pass2'],
+                $response['hashPass'],
+                $response['active'],
+                $response['token'],
+                $response['tokenExpiryTime']
+            );
+        }
+        else
+        {
+            $this->exitWithError(500);
+        }
+
+        $this->setResponse($response);
+    }
+
     public function executeMembersGET(HTTPRequest $request)
     {
         $authorization = $this->getAuthorization();
@@ -125,7 +237,7 @@ class MemberController extends APIController
                     $nombreMembres
                 );
             }
-            catch (\Exception $e)
+            catch (\RuntimeException $e)
             {
                 $this->exitWithError(404, 'this page does not exist');
             }

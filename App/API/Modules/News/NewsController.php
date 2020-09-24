@@ -53,7 +53,7 @@ class NewsController extends APIController
                     $nombreNews
                 );
             }
-            catch (\Exception $e)
+            catch (\RuntimeException $e)
             {
                 $this->exitWithError(404, 'this page does not exist');
             }
@@ -129,19 +129,19 @@ class NewsController extends APIController
 
     public function executeNewsPATCH(HTTPRequest $request)
     {
+        if (!$request->getExists('id'))
+        {
+            $this->exitWithError(400);
+        }
+
+        $newsId = $request->getData('id');
+
         $authorization = $this->getAuthorization();
 
         if (!$authorization || !$authorization->isAdmin())
         {
             $this->exitWithError(401, 'user is not admin');
         }
-
-        if (!$request->getExists('id'))
-        {
-            $this->exitWithError(400, 'news id not provided');
-        }
-
-        $newsId = $request->getData('id');
 
         if (!($storedNews = $this->managers->getManagerOf('News')->get($newsId)))
         {
@@ -185,19 +185,19 @@ class NewsController extends APIController
 
     public function executeNewsDELETE(HTTPRequest $request)
     {
+        if (!$request->getExists('id'))
+        {
+            $this->exitWithError(400);
+        }
+
+        $newsId = $request->getData('id');
+
         $authorization = $this->getAuthorization();
 
         if (!$authorization || !$authorization->isAdmin())
         {
             $this->exitWithError(401, 'user is not admin');
         }
-
-        if (!$request->getExists('id'))
-        {
-            $this->exitWithError(400, 'news id not provided');
-        }
-
-        $newsId = $request->getData('id');
 
         if (!$this->managers->getManagerOf('News')->get($newsId))
         {
@@ -284,19 +284,19 @@ class NewsController extends APIController
 
     public function executeCommentsPATCH(HTTPRequest $request)
     {
+        if (!$request->getExists('id'))
+        {
+            $this->exitWithError(400);
+        }
+
+        $commentId = $request->getData('id');
+
         $authorization = $this->getAuthorization();
 
         if (!$authorization)
         {
             $this->exitWithError(401);
         }
-
-        if (!$request->getExists('id'))
-        {
-            $this->exitWithError(400, 'comment id not provided');
-        }
-
-        $commentId = $request->getData('id');
 
         $storedComment = $this->managers->getManagerOf('Comments')
             ->get($commentId);
@@ -349,6 +349,13 @@ class NewsController extends APIController
 
     public function executeCommentsDELETE(HTTPRequest $request)
     {
+        if (!$request->getExists('id'))
+        {
+            $this->exitWithError(400);
+        }
+
+        $commentId = $request->getData('id');
+
         $authorization = $this->getAuthorization();
 
         if (!$authorization)
@@ -356,12 +363,6 @@ class NewsController extends APIController
             $this->exitWithError(401);
         }
 
-        if (!$request->getExists('id'))
-        {
-            $this->exitWithError(400, 'comment id not provided');
-        }
-
-        $commentId = $request->getData('id');
         $comment = $this->managers->getManagerOf('Comments')->get($commentId);
 
         if (!$comment)
