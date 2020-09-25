@@ -217,12 +217,13 @@ class NewsController extends APIController
             $this->exitWithError(404, "news $newsId does not exist");
         }
 
-        if ($this->managers->getManagerOf('News')->delete($newsId) &&
-            $this->managers->getManagerOf('Comments')->deleteFromNews($newsId))
+        if ($this->managers->getManagerOf('News')->delete($newsId))
         {
+            $this->managers->getManagerOf('Comments')->deleteFromNews($newsId);
+
             $response = array(
                 'message' =>
-                "news $newsId and attached cooments have been deleted"
+                "news $newsId and attached comments have been deleted"
             );
         }
         else
