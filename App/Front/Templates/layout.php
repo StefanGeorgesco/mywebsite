@@ -63,7 +63,7 @@
                     <a href="/admin/members.html">Membres (admin)</a>
                 </li>
                 <li>
-                    <a href="/admin/authorizations.html">Tokens</a>
+                    <a href="/admin/authorizations.html">Autorisations</a>
                 </li>
                 <li>
                     <a href="/admin/sign-out.html">Quitter admin</a>

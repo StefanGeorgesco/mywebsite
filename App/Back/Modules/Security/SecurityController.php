@@ -181,4 +181,25 @@ class SecurityController extends BackController
         $this->page->addVar('title', 'Supprimer une autorisation');
         $this->page->addVar('authorization', $authorization);
     }
+
+    public function executeDeleteOpIds(HTTPRequest $request)
+    {
+        $authorization = $this->managers->getManagerOf('Authorizations')
+            ->get($request->getData('id'));
+
+        if ($request->method() == 'POST')
+        {
+            $this->managers->getManagerOf('Authorizations')
+                ->deleteOpIds($authorization);
+
+            $this->app->user()->setFlash(
+                'Les opids de l\'autorisation ont bien été supprimés.'
+            );
+
+            $this->app->httpResponse()->redirect('authorizations.html');
+        }
+
+        $this->page->addVar('title', 'Supprimer les opids d\'une autorisation');
+        $this->page->addVar('authorization', $authorization);
+    }
 }

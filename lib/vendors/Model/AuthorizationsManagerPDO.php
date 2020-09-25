@@ -78,6 +78,13 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
         return $q->execute();
     }
 
+    public function deleteOpIds(Authorization $authorization)
+    {
+        return $this->dao->exec("
+            DELETE FROM opids WHERE authorization=
+        ".$authorization->id());
+    }
+
     public function delete(Authorization $authorization)
     {
         $res1 = $this->dao->exec("
@@ -88,7 +95,7 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
             DELETE FROM authorizations WHERE id=
         ".$authorization->id());
 
-        return $res1 && $res2;
+        return $res1 + $res2;
     }
 
     public function deleteFromMember($member)
@@ -104,7 +111,7 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
         ".(int) $member
         );
 
-        return $res1 && $res2;
+        return $res1 + $res2;
     }
 
     public function getListOfMember($member, $debut = -1, $limite = -1)
@@ -144,6 +151,8 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
             $authorization->setUpdateDate(
                 new \DateTime($authorization->updateDate())
             );
+
+            $this->loadOpIds($authorization);
         }
 
         return $authorizations;
@@ -184,6 +193,8 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
             $authorization->setUpdateDate(
                 new \DateTime($authorization->updateDate())
             );
+
+            $this->loadOpIds($authorization);
         }
 
         return $authorizations;
@@ -214,6 +225,8 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
             $authorization->setUpdateDate(
                 new \DateTime($authorization->updateDate())
             );
+
+            $this->loadOpIds($authorization);
 
             return $authorization;
         }

@@ -65,6 +65,14 @@ abstract class AuthorizationsManager extends Manager
     abstract public function addOpId(Authorization $authorization, string $opId);
 
     /**
+    * Méthode permettant de supprimer les opids d'une autorisation.
+    * @param $authorization Authorization L'autorisation dont il faut
+    * supprimer les opids
+    * @return int
+    */
+    abstract public function deleteOpIds(Authorization $authorization);
+
+    /**
     * Méthode permettant de supprimer une autorisation.
     * @param $authorization Authorization L'autorisation à supprimer
     * @return int
