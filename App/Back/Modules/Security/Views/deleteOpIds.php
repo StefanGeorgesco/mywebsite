@@ -1,6 +1,19 @@
 <h2>Supprimer les opids d'une autorisation</h2>
 <h2><?= $authorization['creationDate']->format('d/m/Y à H\hi') ?></h2>
 <p><?= $page->parseString($authorization['description']) ?></p>
+
+<?php
+if ($authorization['creationDate'] != $authorization['updateDate'])
+{
+    ?>
+    <p><small><em>
+        Autorisation modifiée le
+        <?= $authorization['updateDate']->format('d/m/Y à H\hi') ?>
+    </em></small></p><br />
+    <?php
+}
+?>
+
 <p>
     <?php
         $nbOpIds = count($authorization['opIds']);
@@ -15,14 +28,25 @@
         echo " pour cette autorisation";
     ?>
 </p>
+
 <?php
-if ($authorization['creationDate'] != $authorization['updateDate']) { ?>
-    <p><small><em>
-        Description modifiée le
-        <?= $authorization['updateDate']->format('d/m/Y à H\hi') ?>
-    </em></small></p><br />
-<?php }
+if ($nbOpIds)
+{
+    ?>
+    <p>
+        <ul>
+            <?php
+            foreach ($authorization['opIds'] as $opId)
+            {
+                echo "<li>$opId</li>";
+            }
+            ?>
+        </ul>
+    </p>
+    <?php
+}
 ?>
+
 <form action="" method="post">
     <p>
         <?php
