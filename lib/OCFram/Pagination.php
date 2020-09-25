@@ -26,7 +26,7 @@ class Pagination extends ApplicationComponent
         if ($this->getPage() < 1 ||
             $this->getPage() > $this->getNumberOfPages())
         {
-            throw new \Exception("Pagination error", 1);
+            throw new \RuntimeException("Pagination error", 1);
         }
     }
 
