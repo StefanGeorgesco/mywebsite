@@ -21,4 +21,5 @@
     <route url="/authorization-add\.html" module="Security" action="add"></route>
     <route url="/authorization-update-(\d+)\.html" module="Security" action="update" vars="id"></route>
     <route url="/authorization-delete-(\d+)\.html" module="Security" action="delete" vars="id"></route>
+    <route url="/authorization-delete-opids-(\d+)\.html" module="Security" action="deleteOpIds" vars="id"></route>
 </routes>

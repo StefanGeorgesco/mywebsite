@@ -27,11 +27,23 @@ foreach ($authorizations as $authorization)
         <a href="authorization-delete-<?= $authorization['id'] ?>.html">
             supprimer
         </a>
+        <?php
+        $nbOpIds = count($authorization['opIds']);
+        if ($nbOpIds)
+        {
+         ?>
+        - <a href="authorization-delete-opids-<?= $authorization['id'] ?>.html">
+            supprimer les opids
+        </a>
+        <?php
+        }
+        ?>
     </p>
     <?php
 }
 ?>
 <br />
-<button class="customButton" onclick="location.href='authorization-add.html'">
+<button class="customButton"
+    onclick="location.href='authorization-add.html'">
     Nouvelle autorisation
 </button>

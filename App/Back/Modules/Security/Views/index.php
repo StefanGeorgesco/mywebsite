@@ -1,4 +1,12 @@
 <?php
+if (empty($authorizations))
+{
+    ?>
+    <p>
+        Aucune autorisation pour admin.
+    </p>
+    <?php
+}
 foreach ($authorizations as $authorization)
 {
     ?>
