@@ -14,7 +14,8 @@ class Authorization extends Entity
                 $member = null,
                 $description,
                 $creationDate,
-                $updateDate;
+                $updateDate,
+                $opIds = [];
 
     const TYPES = ['admin', 'member'];
 
@@ -58,6 +59,11 @@ class Authorization extends Entity
     public function getFullToken()
     {
         return $this->token() . $this->passToken();
+    }
+
+    public function isClearOpId($opId)
+    {
+        return !empty($opId) && !in_array($opId, $this->opIds());
     }
 
     // SETTERS //
@@ -122,6 +128,11 @@ class Authorization extends Entity
         $this->updateDate = $updateDate;
     }
 
+    public function setOpIds(array $opIds)
+    {
+        $this->opIds = $opIds;
+    }
+
     // GETTERS //
 
     public function token()
@@ -162,5 +173,10 @@ class Authorization extends Entity
     public function updateDate()
     {
         return $this->updateDate;
+    }
+
+    public function opIds()
+    {
+        return $this->opIds;
     }
 }

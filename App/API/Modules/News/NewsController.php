@@ -253,6 +253,16 @@ class NewsController extends APIController
             $this->exitWithError(404, "news $newsId does not exist");
         }
 
+        if (!($opId = $request->requestBodyDataVar('opId')))
+        {
+            $this->exitWithError(400, 'no operation id');
+        }
+
+        if (!$authorization->isClearOpId($opId))
+        {
+            $this->exitWithError(400, 'operation id already used');
+        }
+
         $data['member'] = $authorization->member();
 
         $comment = new Comment($data);
@@ -268,6 +278,9 @@ class NewsController extends APIController
 
         if ($this->managers->getManagerOf('Comments')->save($comment))
         {
+            $this->managers->getManagerOf('Authorizations')
+                ->addOpId($authorization, $opId);
+
             $response = $this->dismount(
                 $this->managers->getManagerOf('Comments')
                     ->get($comment->id())

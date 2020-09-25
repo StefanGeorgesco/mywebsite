@@ -50,18 +50,61 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
         return false;
     }
 
+    protected function loadOpIds(Authorization $authorization)
+    {
+        $q = $this->dao->query("
+        SELECT opid FROM opids WHERE authorization=
+        ".$authorization->id());
+
+        $opIds = array_map(
+            function ($arr) { return $arr[0]; },
+            array_values($q->fetchAll(\PDO::FETCH_NUM))
+        );
+
+        $authorization->setOpIds($opIds);
+
+        return count($opIds);
+    }
+
+    public function addOpId(Authorization $authorization, string $opId)
+    {
+        $q = $this->dao->prepare("
+        INSERT INTO opids SET opid=:opid, authorization=:authorization
+        ");
+
+        $q->bindValue(':opid', $opId);
+        $q->bindValue(':authorization', $authorization->id(), \PDO::PARAM_INT);
+
+        return $q->execute();
+    }
+
     public function delete(Authorization $authorization)
     {
-        return $this->dao->exec("
+        $res1 = $this->dao->exec("
+            DELETE FROM opids WHERE authorization=
+        ".$authorization->id());
+
+        $res2 = $this->dao->exec("
             DELETE FROM authorizations WHERE id=
         ".$authorization->id());
+
+        return $res1 && $res2;
     }
 
     public function deleteFromMember($member)
     {
-        return $this->dao->exec("
+        $res1 =  $this->dao->exec("
+            DELETE FROM opids WHERE authorization IN
+            (SELECT id FROM authorizations WHERE member=
+        ".(int) $member.")
+        ");
+
+        $res2 =  $this->dao->exec("
             DELETE FROM authorizations WHERE member=
-        ".(int) $member);
+        ".(int) $member
+        );
+
+        return $res1 && $res2;
     }
 
     public function getListOfMember($member, $debut = -1, $limite = -1)
@@ -203,6 +246,8 @@ class AuthorizationsManagerPDO extends AuthorizationsManager
             $authorization->setUpdateDate(
                 new \DateTime($authorization->updateDate())
             );
+
+            $this->loadOpIds($authorization);
 
             return $authorization;
         }

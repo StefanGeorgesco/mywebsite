@@ -29,7 +29,9 @@ abstract class Controller extends ApplicationComponent
         if (!is_callable([$this, $method]))
         {
             throw new \RuntimeException(
-                'L\'action "'.$this->action.'" n\'est pas définie sur ce module'
+                "L'action '".$this->action.
+                "' n'est pas définie sur ce module".
+                ($this->app->name() == 'API' ? " avec cette méthode" : "")
             );
         }
 
@@ -41,7 +43,7 @@ abstract class Controller extends ApplicationComponent
         if (!is_string($module) || empty($module))
         {
             throw new \InvalidArgumentException(
-                'Le module doit être une chaine de caractères valide'
+                "Le module doit être une chaine de caractères valide"
             );
         }
 
@@ -53,7 +55,7 @@ abstract class Controller extends ApplicationComponent
         if (!is_string($action) || empty($action))
         {
             throw new \InvalidArgumentException(
-                'L\'action doit être une chaine de caractères valide'
+                "L'action doit être une chaine de caractères valide"
             );
         }
 

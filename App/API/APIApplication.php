@@ -25,7 +25,7 @@ class APIApplication extends Application
         }
         catch (\RuntimeException $e)
         {
-            $this->httpResponse->jsonError(400);
+            $this->httpResponse->jsonError(400, $e->getMessage());
         }
 
         $this->httpResponse->addHeaders($controller->headers());
