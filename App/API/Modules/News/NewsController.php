@@ -101,6 +101,16 @@ class NewsController extends APIController
             $this->exitWithError(401, 'user is not admin');
         }
 
+        if (!($opId = $request->requestBodyDataVar('opId')))
+        {
+            $this->exitWithError(400, 'no operation id');
+        }
+
+        if (!$authorization->isClearOpId($opId))
+        {
+            $this->exitWithError(400, 'operation id already used');
+        }
+
         $news = new News($request->requestBodyData());
 
         $formBuilder = new NewsFormBuilder($news);
@@ -114,6 +124,9 @@ class NewsController extends APIController
 
         if ($this->managers->getManagerOf('News')->save($news))
         {
+            $this->managers->getManagerOf('Authorizations')
+                ->addOpId($authorization, $opId);
+
             $response = $this->dismount(
                 $this->managers->getManagerOf('News')->get($news->id())
             );
