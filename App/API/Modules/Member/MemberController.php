@@ -227,23 +227,33 @@ class MemberController extends APIController
         }
         else
         {
-            $nombreMembres = $this->app->config()->get('nombre_membres');
-
-            try
+            if ($request->getExists('all'))
             {
-                $pagination = new Pagination(
-                    $this->app,
-                    $membersManager,
-                    $nombreMembres
-                );
+                $nombreMembres = -1;
+                $offset = -1;
             }
-            catch (\RuntimeException $e)
+            else
             {
-                $this->exitWithError(404, 'this page does not exist');
+                $nombreMembres = $this->app->config()->get('nombre_membres');
+
+                try
+                {
+                    $pagination = new Pagination(
+                        $this->app,
+                        $membersManager,
+                        $nombreMembres
+                    );
+                }
+                catch (\RuntimeException $e)
+                {
+                    $this->exitWithError(404, 'this page does not exist');
+                }
+
+                $offset = $pagination->getOffset();
             }
 
             $members = $membersManager->getList(
-                $pagination->getOffset(),
+                $offset,
                 $nombreMembres
             );
 

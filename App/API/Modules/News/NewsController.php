@@ -43,23 +43,33 @@ class NewsController extends APIController
         }
         else
         {
-            $nombreNews = $this->app->config()->get('nombre_news');
-
-            try
+            if ($request->getExists('all'))
             {
-                $pagination = new Pagination(
-                    $this->app,
-                    $newsManager,
-                    $nombreNews
-                );
+                $nombreNews = -1;
+                $offset = -1;
             }
-            catch (\RuntimeException $e)
+            else
             {
-                $this->exitWithError(404, 'this page does not exist');
+                $nombreNews = $this->app->config()->get('nombre_news');
+
+                try
+                {
+                    $pagination = new Pagination(
+                        $this->app,
+                        $newsManager,
+                        $nombreNews
+                    );
+                }
+                catch (\RuntimeException $e)
+                {
+                    $this->exitWithError(404, 'this page does not exist');
+                }
+
+                $offset = $pagination->getOffset();
             }
 
             $newsList = $newsManager->getList(
-                $pagination->getOffset(),
+                $offset,
                 $nombreNews
             );
 
