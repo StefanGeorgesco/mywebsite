@@ -147,7 +147,7 @@ class NewsController extends APIController
             );
         }
 
-        $this->setResponse($response);
+        $this->setResponse($this->filter($response));
     }
 
     public function executeNewsPATCH(HTTPRequest $request)
@@ -385,7 +385,7 @@ class NewsController extends APIController
             );
         }
 
-        $this->setResponse($response);
+        $this->setResponse($this->filter($response));
     }
 
     public function executeCommentsPATCH(HTTPRequest $request)

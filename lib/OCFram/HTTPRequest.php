@@ -43,6 +43,11 @@ class HTTPRequest extends ApplicationComponent
         return $_SERVER['REQUEST_URI'];
     }
 
+    public function params()
+    {
+        return $_GET;
+    }
+
     public function requestBodyData()
     {
         $data = json_decode(file_get_contents('php://input') , true);

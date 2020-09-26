@@ -287,6 +287,6 @@ class MemberController extends APIController
             );
         }
 
-        $this->setResponse($response);
+        $this->setResponse($this->filter($response));
     }
 }

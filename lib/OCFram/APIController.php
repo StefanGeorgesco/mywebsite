@@ -59,6 +59,32 @@ abstract class APIController extends Controller
         return $array;
     }
 
+    protected function filter(array $array)
+    {
+        $params = $this->app->httpRequest()->params();
+
+        $testArray = function ($arr, $key) use ($params)
+        {
+        	foreach ($params as $testKey => $testValue)
+        	{
+        		if (isset($arr[$testKey]) && $arr[$testKey] !== $testValue)
+        		{
+        			return false;
+        		}
+        	}
+
+        	return true;
+        };
+
+        return array_values(
+            array_filter(
+                $array,
+                $testArray,
+                ARRAY_FILTER_USE_BOTH
+            )
+        );
+    }
+
     public function addHeader($header)
     {
         $this->headers[] = $header;
