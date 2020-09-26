@@ -293,7 +293,11 @@ class NewsController extends APIController
 
         if (!$form->isValid())
         {
-            $this->exitWithError(400, 'comment data incorrect', $form->errors());
+            $this->exitWithError(
+                400,
+                'comment data incorrect',
+                $form->errors()
+            );
         }
 
         if ($this->managers->getManagerOf('Comments')->save($comment))
@@ -312,6 +316,75 @@ class NewsController extends APIController
         }
 
         $this->setResponseCode(201);
+        $this->setResponse($response);
+    }
+
+    public function executeCommentsGET(HTTPRequest $request)
+    {
+        $authorization = $this->getAuthorization();
+        $newsId = $request->getData('newsId');
+        $commentsManager = $this->managers->getManagerOf('Comments');
+
+        if ($request->getExists('commentId'))
+        {
+            $commentId = $request->getData('commentId');
+
+            $comment = $commentsManager->get($commentId);
+
+            if (!$comment || $comment->news() !== $newsId)
+            {
+                $this->exitWithError(
+                    404,
+                    "comment $commentId of news $newsId does not exist"
+                );
+            }
+
+            $response = $this->dismount($comment);
+        }
+        else
+        {
+            if ($request->getExists('all'))
+            {
+                $nombreCommentaires = -1;
+                $offset = -1;
+            }
+            else
+            {
+                $nombreCommentaires = $this->app->config()
+                    ->get('nombre_commentaires');
+
+                try
+                {
+                    $pagination = new Pagination(
+                        $this->app,
+                        $commentsManager,
+                        $nombreCommentaires,
+                        $newsId
+                    );
+                }
+                catch (\RuntimeException $e)
+                {
+                    $this->exitWithError(404, 'this page does not exist');
+                }
+
+                $offset = $pagination->getOffset();
+            }
+
+            $comments = $commentsManager->getListOf(
+                $request->getData('newsId'),
+                $offset,
+                $nombreCommentaires
+            );
+
+            $response = array_map(
+                function ($comment)
+                {
+                    return $this->dismount($comment);
+                },
+                $comments
+            );
+        }
+
         $this->setResponse($response);
     }
 
@@ -347,7 +420,8 @@ class NewsController extends APIController
             $storedComment['member'] != $authorization->member())
         {
             $this->exitWithError(
-                401, "user does not own comment $commentId of news $newsId"
+                401,
+                "user does not own comment $commentId of news $newsId"
             );
         }
 
@@ -402,20 +476,21 @@ class NewsController extends APIController
             $this->exitWithError(401);
         }
 
-        $storedComment = $this->managers->getManagerOf('Comments')
+        $comment = $this->managers->getManagerOf('Comments')
             ->get($commentId);
 
         $newsId = $request->getData('newsId');
 
-        if (!$storedComment || $storedComment->news() !== $newsId)
+        if (!$comment || $comment->news() !== $newsId)
         {
             $this->exitWithError(
-                404, "comment $commentId of news $newsId does not exist"
+                404,
+                "comment $commentId of news $newsId does not exist"
             );
         }
 
         if ($authorization->isMember() &&
-            $storedComment['member'] != $authorization->member())
+            $comment['member'] != $authorization->member())
         {
             $this->exitWithError(
                 401, "user does not own comment $commentId of news $newsId"
