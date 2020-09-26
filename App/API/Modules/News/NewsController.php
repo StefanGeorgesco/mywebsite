@@ -11,6 +11,59 @@ use \FormBuilder\CommentFormBuilder;
 
 class NewsController extends APIController
 {
+    public function executeNewsPOST(HTTPRequest $request)
+    {
+        if ($request->getExists('id'))
+        {
+            $this->exitWithError(400);
+        }
+
+        $authorization = $this->getAuthorization();
+
+        if (!$authorization || !$authorization->isAdmin())
+        {
+            $this->exitWithError(401, 'user is not admin');
+        }
+
+        if (!($opId = $request->requestBodyDataVar('opId')))
+        {
+            $this->exitWithError(400, 'no operation id');
+        }
+
+        if (!$authorization->isClearOpId($opId))
+        {
+            $this->exitWithError(400, 'operation id already used');
+        }
+
+        $news = new News($request->requestBodyData());
+
+        $formBuilder = new NewsFormBuilder($news);
+        $formBuilder->build();
+        $form = $formBuilder->form();
+
+        if (!$form->isValid())
+        {
+            $this->exitWithError(400, 'news data incorrect', $form->errors());
+        }
+
+        if ($this->managers->getManagerOf('News')->save($news))
+        {
+            $this->managers->getManagerOf('Authorizations')
+                ->addOpId($authorization, $opId);
+
+            $response = $this->dismount(
+                $this->managers->getManagerOf('News')->get($news->id())
+            );
+        }
+        else
+        {
+            $this->exitWithError(500);
+        }
+
+        $this->setResponseCode(201);
+        $this->setResponse($response);
+    }
+
     public function executeNewsGET(HTTPRequest $request)
     {
         $authorization = $this->getAuthorization();
@@ -94,59 +147,6 @@ class NewsController extends APIController
             );
         }
 
-        $this->setResponse($response);
-    }
-
-    public function executeNewsPOST(HTTPRequest $request)
-    {
-        if ($request->getExists('id'))
-        {
-            $this->exitWithError(400);
-        }
-
-        $authorization = $this->getAuthorization();
-
-        if (!$authorization || !$authorization->isAdmin())
-        {
-            $this->exitWithError(401, 'user is not admin');
-        }
-
-        if (!($opId = $request->requestBodyDataVar('opId')))
-        {
-            $this->exitWithError(400, 'no operation id');
-        }
-
-        if (!$authorization->isClearOpId($opId))
-        {
-            $this->exitWithError(400, 'operation id already used');
-        }
-
-        $news = new News($request->requestBodyData());
-
-        $formBuilder = new NewsFormBuilder($news);
-        $formBuilder->build();
-        $form = $formBuilder->form();
-
-        if (!$form->isValid())
-        {
-            $this->exitWithError(400, 'news data incorrect', $form->errors());
-        }
-
-        if ($this->managers->getManagerOf('News')->save($news))
-        {
-            $this->managers->getManagerOf('Authorizations')
-                ->addOpId($authorization, $opId);
-
-            $response = $this->dismount(
-                $this->managers->getManagerOf('News')->get($news->id())
-            );
-        }
-        else
-        {
-            $this->exitWithError(500);
-        }
-
-        $this->setResponseCode(201);
         $this->setResponse($response);
     }
 
