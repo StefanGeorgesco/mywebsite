@@ -246,7 +246,7 @@ class NewsController extends APIController
 
     public function executeCommentsPOST(HTTPRequest $request)
     {
-        if ($request->getExists('id'))
+        if ($request->getExists('commentId'))
         {
             $this->exitWithError(400);
         }
@@ -258,14 +258,9 @@ class NewsController extends APIController
             $this->exitWithError(401, 'user is not a member');
         }
 
+        $newsId = $request->getData('newsId');
+
         $data = $request->requestBodyData();
-
-        if (!isset($data['news']))
-        {
-            $this->exitWithError(400, 'news id not provided');
-        }
-
-        $newsId = $data['news'];
 
         if (!is_numeric($newsId) || $newsId < 0)
         {
@@ -288,6 +283,7 @@ class NewsController extends APIController
         }
 
         $data['member'] = $authorization->member();
+        $data['news'] = $newsId;
 
         $comment = new Comment($data);
 
@@ -321,12 +317,12 @@ class NewsController extends APIController
 
     public function executeCommentsPATCH(HTTPRequest $request)
     {
-        if (!$request->getExists('id'))
+        if (!$request->getExists('commentId'))
         {
             $this->exitWithError(400);
         }
 
-        $commentId = $request->getData('id');
+        $commentId = $request->getData('commentId');
 
         $authorization = $this->getAuthorization();
 
@@ -338,15 +334,21 @@ class NewsController extends APIController
         $storedComment = $this->managers->getManagerOf('Comments')
             ->get($commentId);
 
-        if (!$storedComment)
+        $newsId = $request->getData('newsId');
+
+        if (!$storedComment || $storedComment->news() !== $newsId)
         {
-            $this->exitWithError(404, "comment $commentId does not exist");
+            $this->exitWithError(
+                404, "comment $commentId of news $newsId does not exist"
+            );
         }
 
         if ($authorization->isMember() &&
             $storedComment['member'] != $authorization->member())
         {
-            $this->exitWithError(401, "user does not own comment $commentId");
+            $this->exitWithError(
+                401, "user does not own comment $commentId of news $newsId"
+            );
         }
 
         $comment = new Comment(
@@ -386,12 +388,12 @@ class NewsController extends APIController
 
     public function executeCommentsDELETE(HTTPRequest $request)
     {
-        if (!$request->getExists('id'))
+        if (!$request->getExists('commentId'))
         {
             $this->exitWithError(400);
         }
 
-        $commentId = $request->getData('id');
+        $commentId = $request->getData('commentId');
 
         $authorization = $this->getAuthorization();
 
@@ -400,24 +402,31 @@ class NewsController extends APIController
             $this->exitWithError(401);
         }
 
-        $comment = $this->managers->getManagerOf('Comments')->get($commentId);
+        $storedComment = $this->managers->getManagerOf('Comments')
+            ->get($commentId);
 
-        if (!$comment)
+        $newsId = $request->getData('newsId');
+
+        if (!$storedComment || $storedComment->news() !== $newsId)
         {
-            $this->exitWithError(404, "comment $commentId does not exist");
+            $this->exitWithError(
+                404, "comment $commentId of news $newsId does not exist"
+            );
         }
 
         if ($authorization->isMember() &&
-            $comment['member'] != $authorization->member())
+            $storedComment['member'] != $authorization->member())
         {
-            $this->exitWithError(401, "user does not own comment $commentId");
+            $this->exitWithError(
+                401, "user does not own comment $commentId of news $newsId"
+            );
         }
 
         if ($this->managers->getManagerOf('Comments')->delete($commentId))
         {
             $response = array(
                 'message' =>
-                "comment $commentId has been deleted"
+                "comment $commentId of news $newsId has been deleted"
             );
         }
         else
