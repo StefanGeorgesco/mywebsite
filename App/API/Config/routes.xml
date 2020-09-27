@@ -7,5 +7,5 @@
     <route url="/API/news(?:\?.*)?" module="News" action="news"></route>
     <route url="/API/news/(\d+)" module="News" action="news" vars="id"></route>
     <route url="/API/news/(\d+)/comments(?:\?.*)?" module="News" action="comments" vars="newsId"></route>
-    <route url="/API/news/(\d+)/comments/(\d+)" module="News" action="comments" vars="newsId,commentId"></route>
+    <route url="/API/news/(\d+)/comments/(\d+)" module="News" action="comments" vars="newsId,id"></route>
 </routes>

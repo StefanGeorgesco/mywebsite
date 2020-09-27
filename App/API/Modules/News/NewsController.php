@@ -248,7 +248,7 @@ class NewsController extends APIController
 
     public function executeCommentsPOST(HTTPRequest $request)
     {
-        if ($request->getExists('commentId'))
+        if ($request->getExists('id'))
         {
             $this->exitWithError(400);
         }
@@ -327,17 +327,17 @@ class NewsController extends APIController
         $newsId = $request->getData('newsId');
         $commentsManager = $this->managers->getManagerOf('Comments');
 
-        if ($request->getExists('commentId'))
+        if ($request->getExists('id'))
         {
-            $commentId = $request->getData('commentId');
+            $id = $request->getData('id');
 
-            $comment = $commentsManager->get($commentId);
+            $comment = $commentsManager->get($id);
 
             if (!$comment || $comment->news() !== $newsId)
             {
                 $this->exitWithError(
                     404,
-                    "comment $commentId of news $newsId does not exist"
+                    "comment $id of news $newsId does not exist"
                 );
             }
 
@@ -394,12 +394,12 @@ class NewsController extends APIController
 
     public function executeCommentsPATCH(HTTPRequest $request)
     {
-        if (!$request->getExists('commentId'))
+        if (!$request->getExists('id'))
         {
             $this->exitWithError(400);
         }
 
-        $commentId = $request->getData('commentId');
+        $id = $request->getData('id');
 
         $authorization = $this->getAuthorization();
 
@@ -409,14 +409,14 @@ class NewsController extends APIController
         }
 
         $storedComment = $this->managers->getManagerOf('Comments')
-            ->get($commentId);
+            ->get($id);
 
         $newsId = $request->getData('newsId');
 
         if (!$storedComment || $storedComment->news() !== $newsId)
         {
             $this->exitWithError(
-                404, "comment $commentId of news $newsId does not exist"
+                404, "comment $id of news $newsId does not exist"
             );
         }
 
@@ -425,7 +425,7 @@ class NewsController extends APIController
         {
             $this->exitWithError(
                 401,
-                "user does not own comment $commentId of news $newsId"
+                "user does not own comment $id of news $newsId"
             );
         }
 
@@ -466,12 +466,12 @@ class NewsController extends APIController
 
     public function executeCommentsDELETE(HTTPRequest $request)
     {
-        if (!$request->getExists('commentId'))
+        if (!$request->getExists('id'))
         {
             $this->exitWithError(400);
         }
 
-        $commentId = $request->getData('commentId');
+        $id = $request->getData('id');
 
         $authorization = $this->getAuthorization();
 
@@ -481,7 +481,7 @@ class NewsController extends APIController
         }
 
         $comment = $this->managers->getManagerOf('Comments')
-            ->get($commentId);
+            ->get($id);
 
         $newsId = $request->getData('newsId');
 
@@ -489,7 +489,7 @@ class NewsController extends APIController
         {
             $this->exitWithError(
                 404,
-                "comment $commentId of news $newsId does not exist"
+                "comment $id of news $newsId does not exist"
             );
         }
 
@@ -497,15 +497,15 @@ class NewsController extends APIController
             $comment['member'] != $authorization->member())
         {
             $this->exitWithError(
-                401, "user does not own comment $commentId of news $newsId"
+                401, "user does not own comment $id of news $newsId"
             );
         }
 
-        if ($this->managers->getManagerOf('Comments')->delete($commentId))
+        if ($this->managers->getManagerOf('Comments')->delete($id))
         {
             $response = array(
                 'message' =>
-                "comment $commentId of news $newsId has been deleted"
+                "comment $id of news $newsId has been deleted"
             );
         }
         else
