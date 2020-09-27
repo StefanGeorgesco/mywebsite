@@ -52,7 +52,8 @@ abstract class APIController extends Controller
 
         foreach ($reflectionClass->getProperties() as $property) {
             $property->setAccessible(true);
-            $array[$property->getName()] = $property->getValue($object);
+            $value = $property->getValue($object);
+            $array[$property->getName()] = $value !== null ? $value : "";
             $property->setAccessible(false);
         }
 
@@ -61,13 +62,27 @@ abstract class APIController extends Controller
 
     protected function filter(array $array)
     {
+        function matches($testValue, $subject)
+        {
+            if ($subject instanceof \DateTime)
+            {
+                $subject = $subject->format('Y-m-d');
+            }
+            
+            return preg_match(
+                '#' . strtolower($testValue) . '#',
+                strtolower($subject)
+            );
+        }
+
         $params = $this->app->httpRequest()->params();
 
         $testArray = function ($arr, $key) use ($params)
         {
         	foreach ($params as $testKey => $testValue)
         	{
-        		if (isset($arr[$testKey]) && $arr[$testKey] !== $testValue)
+        		if (isset($arr[$testKey]) &&
+                    !matches($testValue, $arr[$testKey]))
         		{
         			return false;
         		}
