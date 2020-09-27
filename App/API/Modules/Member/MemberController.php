@@ -257,36 +257,38 @@ class MemberController extends APIController
                 $nombreMembres
             );
 
-            $response = array_map(
-                function ($member) use ($commentsManager)
-                {
-                    $memberArray = $this->dismount($member);
+            $response = $this->filter(
+                array_map(
+                    function ($member) use ($commentsManager)
+                    {
+                        $memberArray = $this->dismount($member);
 
-                    unset(
-                        $memberArray['pass'],
-                        $memberArray['pass2'],
-                        $memberArray['hashPass'],
-                        $memberArray['active'],
-                        $memberArray['token'],
-                        $memberArray['tokenExpiryTime']
-                    );
+                        unset(
+                            $memberArray['pass'],
+                            $memberArray['pass2'],
+                            $memberArray['hashPass'],
+                            $memberArray['active'],
+                            $memberArray['token'],
+                            $memberArray['tokenExpiryTime']
+                        );
 
-                    $commentsArray = array_map(
-                        function ($comment)
-                        {
-                            return $this->dismount($comment);
-                        },
-                        $commentsManager->getListOfMember($member['id'])
-                    );
+                        $commentsArray = array_map(
+                            function ($comment)
+                            {
+                                return $this->dismount($comment);
+                            },
+                            $commentsManager->getListOfMember($member['id'])
+                        );
 
-                    $memberArray['comments'] = $commentsArray;
+                        $memberArray['comments'] = $commentsArray;
 
-                    return $memberArray;
-                },
-                $members
+                        return $memberArray;
+                    },
+                    $members
+                )
             );
         }
 
-        $this->setResponse($this->filter($response));
+        $this->setResponse($response);
     }
 }

@@ -126,28 +126,30 @@ class NewsController extends APIController
                 $nombreNews
             );
 
-            $response = array_map(
-                function ($news) use ($commentsManager)
-                {
-                    $newsArray = $this->dismount($news);
+            $response = $this->filter(
+                array_map(
+                    function ($news) use ($commentsManager)
+                    {
+                        $newsArray = $this->dismount($news);
 
-                    $commentsArray = array_map(
-                        function ($comment)
-                        {
-                            return $this->dismount($comment);
-                        },
-                        $commentsManager->getListOf($news['id'])
-                    );
+                        $commentsArray = array_map(
+                            function ($comment)
+                            {
+                                return $this->dismount($comment);
+                            },
+                            $commentsManager->getListOf($news['id'])
+                        );
 
-                    $newsArray['comments'] = $commentsArray;
+                        $newsArray['comments'] = $commentsArray;
 
-                    return $newsArray;
-                },
-                $newsList
+                        return $newsArray;
+                    },
+                    $newsList
+                )
             );
         }
 
-        $this->setResponse($this->filter($response));
+        $this->setResponse($response);
     }
 
     public function executeNewsPATCH(HTTPRequest $request)
@@ -376,16 +378,18 @@ class NewsController extends APIController
                 $nombreCommentaires
             );
 
-            $response = array_map(
-                function ($comment)
-                {
-                    return $this->dismount($comment);
-                },
-                $comments
+            $response = $this->filter(
+                array_map(
+                    function ($comment)
+                    {
+                        return $this->dismount($comment);
+                    },
+                    $comments
+                )
             );
         }
 
-        $this->setResponse($this->filter($response));
+        $this->setResponse($response);
     }
 
     public function executeCommentsPATCH(HTTPRequest $request)
