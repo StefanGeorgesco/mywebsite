@@ -5,4 +5,4 @@ With many additions like :
 - members (users) management,
 - auto script (JS) generation,
 - auto address search (API : https://api-adresse.data.gouv.fr/search/)
-- API App : check login, member data, members list
+- API App : check login, POST/GET/PATCH/DELETE, members/news/commets, Authorizations (tokens), op ids for POST ops, filter and paginate results 
