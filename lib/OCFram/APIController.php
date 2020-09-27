@@ -62,20 +62,23 @@ abstract class APIController extends Controller
 
     protected function filter(array $array)
     {
+        if (!($params = $this->app->httpRequest()->params()))
+        {
+            return $array;
+        }
+
         function matches($testValue, $subject)
         {
             if ($subject instanceof \DateTime)
             {
                 $subject = $subject->format('Y-m-d');
             }
-            
+
             return preg_match(
                 '#' . strtolower($testValue) . '#',
                 strtolower($subject)
             );
         }
-
-        $params = $this->app->httpRequest()->params();
 
         $testArray = function ($arr, $key) use ($params)
         {
@@ -91,13 +94,38 @@ abstract class APIController extends Controller
         	return true;
         };
 
-        return array_values(
+        $array = array_values(
             array_filter(
                 $array,
                 $testArray,
                 ARRAY_FILTER_USE_BOTH
             )
         );
+
+        return $array;
+    }
+
+    public function paginate(array $array, $itemsPerPage = 20)
+    {
+        $params = $this->app->httpRequest()->params();
+
+        if (!isset($params['page']))
+        {
+            return $array;
+        }
+
+        $page = $params['page'];
+        $count = count($array);
+        $numberOfPages = max(1, (int) ceil($count / $itemsPerPage));
+
+        if (!is_numeric($page) || $page < 1 || $page > $numberOfPages)
+        {
+            throw new \RuntimeException("this page does not exist", 1);
+        }
+
+        $offset = ($page - 1) * $itemsPerPage;
+
+        return array_slice($array, $offset, $itemsPerPage);
     }
 
     public function addHeader($header)

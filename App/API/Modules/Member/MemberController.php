@@ -227,35 +227,9 @@ class MemberController extends APIController
         }
         else
         {
-            if ($request->getExists('all'))
-            {
-                $nombreMembres = -1;
-                $offset = -1;
-            }
-            else
-            {
-                $nombreMembres = $this->app->config()->get('nombre_membres');
+            $nombreMembres = $this->app->config()->get('nombre_membres');
 
-                try
-                {
-                    $pagination = new Pagination(
-                        $this->app,
-                        $membersManager,
-                        $nombreMembres
-                    );
-                }
-                catch (\RuntimeException $e)
-                {
-                    $this->exitWithError(404, 'this page does not exist');
-                }
-
-                $offset = $pagination->getOffset();
-            }
-
-            $members = $membersManager->getList(
-                $offset,
-                $nombreMembres
-            );
+            $members = $membersManager->getList();
 
             $response = $this->filter(
                 array_map(
@@ -287,6 +261,8 @@ class MemberController extends APIController
                     $members
                 )
             );
+
+            $response = $this->paginate($response, $nombreMembres);
         }
 
         $this->setResponse($response);

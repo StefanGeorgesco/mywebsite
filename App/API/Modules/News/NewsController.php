@@ -96,35 +96,9 @@ class NewsController extends APIController
         }
         else
         {
-            if ($request->getExists('all'))
-            {
-                $nombreNews = -1;
-                $offset = -1;
-            }
-            else
-            {
-                $nombreNews = $this->app->config()->get('nombre_news');
+            $nombreNews = $this->app->config()->get('nombre_news');
 
-                try
-                {
-                    $pagination = new Pagination(
-                        $this->app,
-                        $newsManager,
-                        $nombreNews
-                    );
-                }
-                catch (\RuntimeException $e)
-                {
-                    $this->exitWithError(404, 'this page does not exist');
-                }
-
-                $offset = $pagination->getOffset();
-            }
-
-            $newsList = $newsManager->getList(
-                $offset,
-                $nombreNews
-            );
+            $newsList = $newsManager->getList();
 
             $response = $this->filter(
                 array_map(
@@ -147,6 +121,8 @@ class NewsController extends APIController
                     $newsList
                 )
             );
+
+            $response = $this->paginate($response, $nombreNews);
         }
 
         $this->setResponse($response);
@@ -345,38 +321,10 @@ class NewsController extends APIController
         }
         else
         {
-            if ($request->getExists('all'))
-            {
-                $nombreCommentaires = -1;
-                $offset = -1;
-            }
-            else
-            {
-                $nombreCommentaires = $this->app->config()
-                    ->get('nombre_commentaires');
+            $nombreCommentaires = $this->app->config()
+                ->get('nombre_commentaires');
 
-                try
-                {
-                    $pagination = new Pagination(
-                        $this->app,
-                        $commentsManager,
-                        $nombreCommentaires,
-                        $newsId
-                    );
-                }
-                catch (\RuntimeException $e)
-                {
-                    $this->exitWithError(404, 'this page does not exist');
-                }
-
-                $offset = $pagination->getOffset();
-            }
-
-            $comments = $commentsManager->getListOf(
-                $request->getData('newsId'),
-                $offset,
-                $nombreCommentaires
-            );
+            $comments = $commentsManager->getListOf($request->getData('newsId'));
 
             $response = $this->filter(
                 array_map(
@@ -387,6 +335,8 @@ class NewsController extends APIController
                     $comments
                 )
             );
+
+            $response = $this->paginate($response, $nombreCommentaires);
         }
 
         $this->setResponse($response);
