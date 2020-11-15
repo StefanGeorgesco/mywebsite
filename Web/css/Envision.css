@@ -334,6 +334,12 @@ header .login {
 	bottom: 0;
 	right: 30px;
 }
+
+header .email_image {
+	position: absolute;
+	top: 30px;
+	right: 30px;
+}
 /*------------------------------------------*/
 
 /* header links */

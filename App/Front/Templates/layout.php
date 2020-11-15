@@ -24,6 +24,14 @@
             <div class="login">
                 <?= $user->getAttribute('login') ?>
             </div>
+            <div class="email_image">
+                <a href="email/email.html" target="_blank">
+                    <img
+                        src="images/email.png"
+                        style="width: 40px;"
+                        alt="image email" />
+                </a>
+            </div>
         </header>
         <nav>
             <ul>

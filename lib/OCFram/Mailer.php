@@ -46,7 +46,7 @@ class Mailer extends ApplicationComponent
 		//mail($this->to, $this->subject, $this->message, self::HEADERS);
 
         // FOR DEVELOPMENT PHASE :
-        file_put_contents('/home/stefan/email.html', $this->message);
+        file_put_contents('mail/email.html', $this->message);
 	}
 
     // SETTERS

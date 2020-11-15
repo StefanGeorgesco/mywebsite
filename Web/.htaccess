@@ -2,6 +2,8 @@ RewriteEngine On
 
 RewriteRule (.+)\.[\d]{10}\.(css|js|jpg|jpeg|gif|png)$ $1.$2 [L]
 
+RewriteRule ^email/ mail/email.html [L]
+
 RewriteRule ^API/ bootstrap.php?app=API [QSA,L]
 
 RewriteRule ^admin/ bootstrap.php?app=Back [QSA,L]

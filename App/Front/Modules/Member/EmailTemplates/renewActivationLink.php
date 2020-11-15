@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8"/>
     <title><?= isset($title) ? $title : 'Mon super site' ?></title>
     <link rel="stylesheet" href="<?= $baseUrl ?>css/Envision.css" />
 </head>
